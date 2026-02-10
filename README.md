@@ -106,7 +106,7 @@ Restart your shell to apply changes.
 ```Bash
 exec zsh
 ```
-## 🛠 Usage
+## Usage
 I use the config alias (defined in .zshrc) to manage these files.
 
 1. Adding New Configs
@@ -123,3 +123,13 @@ config push
 config status
 ```
 Note: Untracked files are hidden by default to keep the output clean.
+
+## Issues & Contributing
+
+If you find a broken link, an incorrect command, or an outdated step, please [open an issue](https://github.com/shalom2552/dotfiles/issues).
+
+Contributions are welcome!
+
+## License
+
+This project is licensed under the MIT License - feel free to use it for your own setup!
