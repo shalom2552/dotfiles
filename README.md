@@ -34,7 +34,8 @@ This command clones the bare repo and handles potential file conflicts by backin
 
 ```bash
 # 1. Clone bare repo
-git clone --bare git@github.com:shalom2552/dotfiles.git $HOME/.dotfiles
+git clone --bare https://github.com/shalom2552/dotfiles.git $HOME/.dotfiles
+
 
 # 2. Define temporary alias
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
