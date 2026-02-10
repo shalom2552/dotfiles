@@ -127,6 +127,13 @@ Run this to force-restore the configurations:
 exec zsh
 ```
 
+### 6. Configure Prompt
+Once Zsh starts, you can customize the prompt style by running:
+
+```bash
+p10k configure
+```
+
 ## Usage
 I use the config alias (defined in .zshrc) to manage these files.
 
