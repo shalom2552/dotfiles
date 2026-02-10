@@ -22,10 +22,6 @@ Ensure `git` and `zsh` are installed.
 sudo apt install git zsh
 chsh -s $(which zsh)
 ```
-To install fnm (Fast Node Manager), run this command in your terminal:
-```bash
-curl -fsSL https://fnm.vercel.app/install | bash
-```
 
 ### 2. Clone the Repository
 This command clones the bare repo and handles potential file conflicts by backing up existing configs automatically.
@@ -57,11 +53,19 @@ config config --local status.showUntrackedFiles no
 Run these commands to set up the shell environment, dependencies, and tools tracked in this repo.
 
 #### 1. System Tools
-Install the core utilities (including `batcat` and `fdfind`, which are aliased in `.zshrc`).
+Install the core utilities (including `batcat` and `eza`, which are aliased in `.zshrc`).
 ```bash
 sudo apt update
-sudo apt install fd-find bat eza btop fzf ripgrep
+sudo apt install fd-find bat eza btop ripgrep
 ```
+
+Install fzf via Git to get the latest version and keybindings (Ctrl+T, Ctrl+R).
+
+```Bash
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --all
+```
+
 #### 2. Shell Environment (Oh My Zsh + Plugins)
 This block installs Oh My Zsh, the Powerlevel10k theme, and the required syntax highlighting/autosuggestion plugins.
 
