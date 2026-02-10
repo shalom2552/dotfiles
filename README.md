@@ -5,7 +5,7 @@ My personal configuration files for Linux, managed using a **bare git repository
 ## Tracked Configurations
 * **Shell:** Zsh + Oh My Zsh + Powerlevel10k
 * **Terminal:** Kitty (Tokyo Night Theme)
-* **Editor:** Neovim (LazyVim)
+* **Editor:** Neovim ([LazyVim](https://www.lazyvim.org/))
 * **Version Manager:** fnm (Node.js)
 * **Tools:**
     * `fzf` (Fuzzy Finder)
@@ -13,6 +13,12 @@ My personal configuration files for Linux, managed using a **bare git repository
     * `btop` (Resource Monitor)
     * `fastfetch` (System Info)
     * `bat` & `eza` (Modern `cat` and `ls`)
+
+### Neovim Configuration
+
+I use a customized version of [LazyVim]([https://www.lazyvim.org/](https://github.com/LazyVim/LazyVim)).
+* **My Config:** [github.com/shalom2552/nvim](https://github.com/shalom2552/nvim) (Clone this to `~/.config/nvim` to use my setup).
+* **Start Fresh:** If you prefer to build your own, check out the [LazyVim Starter Documentation](https://www.lazyvim.org/).
 
 ## Installation on a New Machine
 
