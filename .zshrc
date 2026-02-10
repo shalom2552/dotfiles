@@ -103,4 +103,6 @@ alias lock='xdg-screensaver lock'
 alias stresstest='glmark2-es2-wayland'
 alias todo='grep -rnw --color=auto TODO'
 alias q='exit'
+# List all aliases with color and search
+alias shortcuts='batcat --color=always --style=plain ~/.zshrc | grep "^alias" | fzf --ansi --border-label=" My Shortcuts "'
 
