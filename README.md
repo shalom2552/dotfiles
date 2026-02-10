@@ -130,6 +130,11 @@ config status
 ```
 Note: Untracked files are hidden by default to keep the output clean.
 
+3. To view and search all available aliases, run:
+```bash
+shortcuts
+```
+
 ## Issues & Contributing
 
 If you find a broken link, an incorrect command, or an outdated step, please [open an issue](https://github.com/shalom2552/dotfiles/issues).
