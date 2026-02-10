@@ -135,6 +135,13 @@ Note: Untracked files are hidden by default to keep the output clean.
 shortcuts
 ```
 
+## Troubleshooting
+
+**"Command not found" errors?**
+My configuration uses many modern CLI replacements (like `bat` instead of `cat`, or `eza` instead of `ls`). If you see an error like `zsh: command not found: tty-clock`, it means you haven't installed that specific tool yet.
+
+**Solution:** Google the package name and install it for your OS, or remove the alias from `.zshrc`.
+
 ## Issues & Contributing
 
 If you find a broken link, an incorrect command, or an outdated step, please [open an issue](https://github.com/shalom2552/dotfiles/issues).
