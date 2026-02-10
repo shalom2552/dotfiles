@@ -1,0 +1,106 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "small",
+    "padding": {
+      "top": 1,
+      "left": 2,
+      "right": 2
+    }
+  },
+  "display": {
+    "separator": " ",
+    "key": {
+        "width": 18
+    },
+    "percent": {
+        "type": 3
+    },
+    "bar": {
+      "char": {
+        "elapsed": "■",
+        "total": "-"
+      },
+      "border": {
+        "left": "[",
+        "right": "]"
+      },
+      "width": 10,
+      "color": {
+          "elapsed": "yellow",
+          "total": "blue"
+      }
+    }
+  },
+  "modules": [
+    "title",
+    "separator",
+
+    // --- Hardware (Blue Background, BLACK Text) ---
+    {
+      "type": "cpu",
+      "key": "{#34}{#44;30}  CPU {#0;34}"
+    },
+    {
+      "type": "gpu",
+      "key": "{#34}{#44;30}  GPU {#0;34}"
+    },
+    {
+      "type": "memory",
+      "key": "{#34}{#44;30}  RAM {#0;34}"
+    },
+    {
+      "type": "disk",
+      "key": "{#34}{#44;30}  DSK {#0;34}",
+      "folders": "/"
+    },
+    {
+      "type": "display",
+      "key": "{#34}{#44;30} 󰍹 DIS {#0;34}"
+    },
+
+    "break",
+
+    // --- Software (Magenta Background, BLACK Text) ---
+    {
+      "type": "os",
+      "key": "{#35}{#45;30}  OS  {#0;35}"
+    },
+    {
+      "type": "kernel",
+      "key": "{#35}{#45;30}  Ker {#0;35}"
+    },
+    {
+      "type": "packages",
+      "key": "{#35}{#45;30}  Pkg {#0;35}"
+    },
+    {
+      "type": "shell",
+      "key": "{#35}{#45;30}  Shl {#0;35}"
+    },
+    {
+      "type": "terminal",
+      "key": "{#35}{#45;30}  Ter {#0;35}"
+    },
+    {
+      "type": "de",
+      "key": "{#35}{#45;30}  DE  {#0;35}"
+    },
+
+    "break",
+
+    // --- Status (Yellow/Green Background, BLACK Text) ---
+    {
+      "type": "uptime",
+      "key": "{#33}{#43;30}  Up  {#0;33}"
+    },
+    {
+      "type": "localip",
+      "key": "{#32}{#42;30} 󰩟 IP  {#0;32}",
+      "compact": true
+    },
+
+    "break",
+    "colors"
+  ]
+}
