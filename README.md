@@ -63,7 +63,7 @@ Run these commands to set up the shell environment, dependencies, and tools trac
 Install the core utilities (including `batcat` and `eza`, which are aliased in `.zshrc`).
 ```bash
 sudo apt update
-sudo apt install fd-find bat eza btop ripgrep
+sudo apt install -y fd-find bat eza btop ripgrep unzip
 ```
 
 Install fzf via Git to get the latest version and keybindings (Ctrl+T, Ctrl+R).
@@ -83,6 +83,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # 2. Install Powerlevel10k Theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
+# Set ZSH_THEME="powerlevel10k/powerlevel10k" in .zshrc
+sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/g' ~/.zshrc
+
 # 3. Install Zsh Plugins (Autosuggestions & Syntax Highlighting)
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
@@ -92,6 +95,10 @@ Install fnm (Fast Node Manager) and the latest Node.js version.
 
 ```Bash
 curl -fsSL https://fnm.vercel.app/install | bash
+
+# Activate fnm in the current shell
+source ~/.bashrc
+
 fnm install --lts
 ```
 #### 4. Fonts
@@ -107,12 +114,19 @@ cd ~/.local/share/fonts && curl -fLO https://github.com/ryanoasis/nerd-fonts/rel
 unzip JetBrainsMono.zip && rm JetBrainsMono.zip
 fc-cache -fv
 ```
-#### 5. Finalize
-Restart your shell to apply changes.
 
-```Bash
+### 5. Finalize
+The installation scripts have overwritten `.zshrc` with a default one. 
+
+Run this to force-restore the configurations:
+```bash
+# 1. Force the repo version of files to overwrite the defaults
+/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME reset --hard HEAD
+
+# 2. Switch to Zsh
 exec zsh
 ```
+
 ## Usage
 I use the config alias (defined in .zshrc) to manage these files.
 
