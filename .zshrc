@@ -48,8 +48,13 @@ function precmd() {
 export EDITOR=nvim
 export VISUAL=nvim
 
+# --- FZF Command Overrides ---
+# Use fdfind to respect .gitignore and include hidden files (like .config)
+# -E excludes specific folders to keep search clean
+export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fdfind --type d --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
 # Set fzf as a popup and alias f to use it and open nvim on output
-# Tokyo Night + Full Screen Popup
 export FZF_DEFAULT_OPTS="
   --height 100% --layout=reverse --border --margin=5% --padding=2% 
   --prompt='🔍 ' --pointer='▶' --marker='✓' 
