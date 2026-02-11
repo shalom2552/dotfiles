@@ -116,14 +116,20 @@ fc-cache -fv
 ```
 
 ### 5. Finalize
-The installation scripts have overwritten `.zshrc` with a default one. 
+The installation scripts have overwritten `.zshrc` with a default one. Run this to force-restore the configurations and ensure Zsh runs by default.
 
-Run this to force-restore the configurations:
 ```bash
 # 1. Force the repo version of files to overwrite the defaults
 /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME reset --hard HEAD
 
-# 2. Switch to Zsh
+
+# 2. (Optional) Ensure Zsh always loads by adding this to .bashrc
+if [ -z "$ZSH_VERSION" ]; then
+    echo "if [ -t 1 ]; then exec zsh; fi" >> ~/.bashrc
+fi
+
+
+# 3. Switch to Zsh
 exec zsh
 ```
 
