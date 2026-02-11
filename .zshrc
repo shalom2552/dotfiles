@@ -90,7 +90,7 @@ alias ga='git add'
 alias gaa='git add --all --verbose'
 alias gap='git add --patch'
 alias gau='git add --update'
-alias gst='git status'
+alias gst='git status -u'
 alias gdf='git diff'
 alias gcm='git commit -m'
 
