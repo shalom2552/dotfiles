@@ -54,7 +54,7 @@ export VISUAL=nvim
 export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fdfind --type d --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
-# Set fzf as a popup and alias f to use it and open nvim on output
+# Set fzf as a popup to use it and open nvim on output
 export FZF_DEFAULT_OPTS="
   --height 100% --layout=reverse --border --margin=5% --padding=2% 
   --prompt='🔍 ' --pointer='▶' --marker='✓' 
@@ -82,7 +82,7 @@ vf() {
 }
 
 # --- Aliases ---
-# List all aliases with color and search
+# List all custome shortcuts with color and search
 alias shortcuts='batcat --color=always --style=plain ~/.zshrc | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
 
 # ls as eza
