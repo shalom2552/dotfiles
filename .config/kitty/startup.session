@@ -9,4 +9,5 @@ launch zsh --no-rcs -c "htop; exec zsh"
 
 # Window 3 (Right Bottom)
 launch zsh --no-rcs -c "tty-clock -c -C 4"
-resize_window shorter 20
+resize_window shorter 15
+
