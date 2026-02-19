@@ -102,6 +102,8 @@ alias gau='git add --update'
 alias gst='git status -u'
 alias gdf='git diff'
 alias gcm='git commit -m'
+alias gco='git checkout'
+alias gsw='git switch'
 
 alias n='xdg-open .'
 alias bat='batcat'
