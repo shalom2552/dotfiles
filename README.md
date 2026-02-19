@@ -13,6 +13,7 @@ My personal configuration files for Linux, managed using a **bare git repository
     * `btop` (Resource Monitor)
     * `fastfetch` (System Info)
     * `bat` & `eza` (Modern `cat` and `ls`)
+    * `zoxide` (Smarter cd)
 
 ### Neovim Configuration
 
@@ -63,7 +64,7 @@ Run these commands to set up the shell environment, dependencies, and tools trac
 Install the core utilities (including `batcat` and `eza`, which are aliased in `.zshrc`).
 ```bash
 sudo apt update
-sudo apt install -y fd-find bat eza btop ripgrep unzip
+sudo apt install -y fd-find bat eza btop ripgrep unzip zoxide
 ```
 
 Install fzf via Git to get the latest version and keybindings (Ctrl+T, Ctrl+R).

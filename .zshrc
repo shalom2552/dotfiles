@@ -81,6 +81,10 @@ vf() {
   [[ -n "$out" ]] && ${EDITOR:-nvim} "${(f)out}"
 }
 
+# --- Zoxide (Smarter cd) ---
+# Tracks your most visited directories to allow jumping with 'z'
+eval "$(zoxide init zsh)"
+
 # --- Aliases ---
 # List all custome shortcuts with color and search
 alias shortcuts='batcat --color=always --style=plain ~/.zshrc | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
