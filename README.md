@@ -39,23 +39,24 @@ git clone --bare https://github.com/shalom2552/dotfiles.git $HOME/.dotfiles
 
 
 # 2. Define temporary alias
-alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # 3. Checkout (with robust backup)
-if config checkout; then
+if dot checkout; then
   echo "Checked out config.";
 else
   echo "Backing up pre-existing dotfiles.";
-  config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | while read file; do
+  dot checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | while read file; do
       mkdir -p .config-backup/$(dirname $file)
       mv $file .config-backup/$file
   done
-  config checkout
+  dot checkout
 fi
 
 # 4. Hide untracked files
-config config --local status.showUntrackedFiles no
+dot config --local status.showUntrackedFiles no
 ```
+
 ### 3. Post-Install
 
 Run these commands to set up the shell environment, dependencies, and tools tracked in this repo.
@@ -142,20 +143,20 @@ p10k configure
 ```
 
 ## Usage
-I use the config alias (defined in .zshrc) to manage these files.
+I use the `dot` alias (defined in .zshrc) to manage these files.
 
 1. Adding New Configs
 Always run this from the Home Directory (~).
 
 ```Bash
-config add .zshrc
-config add .config/kitty/
-config commit -m "Update kitty theme"
-config push
+dot add .zshrc
+dot add .config/kitty/
+dot commit -m "Update kitty theme"
+dot push
 ```
 2. Checking Status
 ```Bash
-config status
+dot status
 ```
 Note: Untracked files are hidden by default to keep the output clean.
 

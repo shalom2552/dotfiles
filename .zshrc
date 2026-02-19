@@ -60,7 +60,7 @@ export FZF_DEFAULT_OPTS="
   --bind 'ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down'"
 
 # --- Zoxide ---
-eval "$(zoxide init zsh)"
+eval "$(zoxide init zsh --cmd cd)"
 
 # =============================================================================
 # 5. FUNCTIONS
@@ -102,6 +102,7 @@ alias ls='eza -G --icons --group-directories-first --git --header'
 alias la='eza -G -a --icons --group-directories-first --git --header'
 alias ll='eza -l --icons --group-directories-first --git --header'
 alias tree='eza -T --icons --git'
+alias zz='cdi'
 
 # Utilities
 alias n='xdg-open .'
@@ -111,8 +112,9 @@ alias todo='grep -rnw --color=auto TODO'
 alias shortcuts='batcat --color=always --style=plain ~/.zshrc | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
 
 # Dotfiles
-alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias configlazy='lazygit --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias dotlgt='lazygit --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+compdef dot=git # This tells Zsh to treat the 'dot' like 'git' 
 
 # Git
 alias ga='git add'
@@ -124,3 +126,4 @@ alias gdf='git diff'
 alias gcm='git commit -m'
 alias gco='git checkout'
 alias gsw='git switch'
+alias lgt='lazygit' # TUI for git
