@@ -21,6 +21,11 @@ I use a customized version of [LazyVim]([https://www.lazyvim.org/](https://githu
 * **My Config:** [github.com/shalom2552/nvim](https://github.com/shalom2552/nvim) (Clone this to `~/.config/nvim` to use my setup).
 * **Start Fresh:** If you prefer to build your own, check out the [LazyVim Starter Documentation](https://www.lazyvim.org/).
 
+## Make it Your Own
+To use this configuration as a base for your own setup:
+1. Click the **Use this template** button at the top of this GitHub repository to create your own independent copy.
+2. In the installation steps below, replace `https://github.com/shalom2552/dotfiles.git` with your new repository's URL.
+
 ## Installation on a New Machine
 
 ### 1. Prerequisites
