@@ -26,6 +26,11 @@ To use this configuration as a base for your own setup:
 1. Click the **Use this template** button at the top of this GitHub repository to create your own independent copy.
 2. In the installation steps below, replace `https://github.com/shalom2552/dotfiles.git` with your new repository's URL.
 
+## Screenshots
+| Main Desktop | Tools (Btop, Yazi, Fastfetch) |
+| :---: | :---: |
+| <img alt="home" src="https://github.com/user-attachments/assets/2a7f666b-2405-40de-9b3c-2edb5a1e5de7" /> | <img alt="btop_yazi_fastfetch" src="https://github.com/user-attachments/assets/c4dbe1ea-19f0-4cd7-9385-1a4302404d88" /> |
+
 ## Installation on a New Machine
 
 ### 1. Prerequisites
