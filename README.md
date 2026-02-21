@@ -8,6 +8,7 @@ My personal configuration files for Linux, managed using a **bare git repository
 * **Editor:** Neovim ([LazyVim](https://www.lazyvim.org/))
 * **Version Manager:** fnm (Node.js)
 * **Tools:**
+    * `tmux` (terminal multiplexer)
     * `fzf` (Fuzzy Finder)
     * `yazi` (Terminal File Manager)
     * `btop` (Resource Monitor)
