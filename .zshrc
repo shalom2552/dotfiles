@@ -26,6 +26,11 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR=nvim
 export VISUAL=nvim
 
+# History
+export HISTFILE="$HOME/.zsh_history"
+export HISTSIZE=10000
+export SAVEHIST=10000
+
 # System Paths
 # Only add paths if the directory exists
 [[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
@@ -45,9 +50,10 @@ fi
 # --- FZF ---
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
+FD_EXCLUDES='--exclude .git --exclude node_modules --exclude .cache'
+export FZF_DEFAULT_COMMAND="fdfind --type f --hidden --follow $FD_EXCLUDES"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fdfind --type d --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
+export FZF_ALT_C_COMMAND="fdfind --type d --hidden --follow $FD_EXCLUDES"
 
 # FZF visual settings
 export FZF_DEFAULT_OPTS="
@@ -73,18 +79,12 @@ function precmd() {
 # Visual find and open in editor
 vf() {
   local out
-  out=$(fdfind --type f --hidden \
-    --exclude .git \
-    --exclude node_modules \
-    --exclude .cache \
-    --exclude .local \
-    --exclude .npm \
-    --exclude .cargo \
-    --exclude .mozilla \
-    --exclude .rustup |
+  out=$(fdfind --type f --hidden $FD_EXCLUDES \
+    --exclude .local --exclude .npm --exclude .cargo \
+    --exclude .mozilla --exclude .rustup |
     fzf --multi --preview='batcat --style=numbers --color=always --line-range :500 {}' \
         --bind='?:toggle-preview,ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down')
-  
+
   [[ -n "$out" ]] && ${EDITOR:-nvim} "${(f)out}"
 }
 
