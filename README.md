@@ -16,6 +16,8 @@ My personal configuration files for Linux, managed using a **bare git repository
     * `bat` & `eza` (Modern `cat` and `ls`)
     * `zoxide` (Smarter cd)
 
+> **[View the Cheatsheet](CHEATSHEET.md)** — all keybindings, shortcuts, and tips for every tool listed above
+
 ### Neovim Configuration
 
 I use a customized version of [LazyVim]([https://www.lazyvim.org/](https://github.com/LazyVim/LazyVim)).
