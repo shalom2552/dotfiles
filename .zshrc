@@ -79,7 +79,7 @@ function precmd() {
 # Visual find and open in editor
 vf() {
   local out
-  out=$(fdfind --type f --hidden $FD_EXCLUDES \
+  out=$(fdfind --type f --hidden ${=FD_EXCLUDES} \
     --exclude .local --exclude .npm --exclude .cargo \
     --exclude .mozilla --exclude .rustup |
     fzf --multi --preview='batcat --style=numbers --color=always --line-range :500 {}' \
