@@ -2,7 +2,7 @@
 cd ~
 
 # Window 1 (Left - Master)
-launch zsh --no-rcs -c "fastfetch --config ~/.config/fastfetch/amazing.jsonc; source ~/.zshrc; vf; exec zsh"
+launch zsh --no-rcs -c "fastfetch --config ~/.config/fastfetch/amazing.jsonc; source ~/.zshrc; exec zsh"
 
 # Window 2 (Right Top)
 launch zsh --no-rcs -c "htop; exec zsh"
