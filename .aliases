@@ -6,7 +6,6 @@ alias fm='yazi'
 alias q='exit'
 
 # Replacements
-alias bat='batcat'
 alias ls='eza -G --icons --group-directories-first --git --header'
 alias la='eza -G -a --icons --group-directories-first --git --header'
 alias ll='eza -l --icons --group-directories-first --git --header'
@@ -15,11 +14,10 @@ alias zz='cdi'
 
 # Utilities
 alias n='xdg-open .'
-alias fdfind='fd'
 alias lock='xdg-screensaver lock'
 alias stresstest='glmark2-es2-wayland'
 alias todo='grep -rnw --color=auto TODO'
-alias shortcuts='batcat --color=always --style=plain ~/.aliases | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
+alias shortcuts='bat --color=always --style=plain ~/.aliases | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
 
 # Dotfiles
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'

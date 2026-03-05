@@ -1,4 +1,9 @@
 # =============================================================================
+# 0. STARTUP
+# =============================================================================
+fastfetch --config ~/.config/fastfetch/amazing.jsonc
+
+# =============================================================================
 # 1. CORE & PRE-INIT
 # =============================================================================
 # Enable Powerlevel10k instant prompt. Should stay close to the top.
@@ -79,17 +84,17 @@ function precmd() {
 # Visual find and open in editor
 vf() {
   local out
-  out=$(fdfind --type f --hidden ${=FD_EXCLUDES} \
+  out=$(fd --type f --hidden ${=FD_EXCLUDES} \
     --exclude .local --exclude .npm --exclude .cargo \
     --exclude .mozilla --exclude .rustup |
-    fzf --multi --preview='batcat --style=numbers --color=always --line-range :500 {}' \
+    fzf --multi --preview='bat --style=numbers --color=always --line-range :500 {}' \
         --bind='?:toggle-preview,ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down')
 
   [[ -n "$out" ]] && ${EDITOR:-nvim} "${(f)out}"
 }
 
 # =============================================================================
-# 6. Hooks
+# 6. HOOKS
 # =============================================================================
 chpwd() {
     eza -G --icons --group-directories-first --git --header
@@ -101,3 +106,4 @@ chpwd() {
 if [ -f ~/.aliases ]; then
     source ~/.aliases
 fi
+
