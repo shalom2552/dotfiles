@@ -13,7 +13,7 @@ alias tree='eza -T --icons --git'
 alias zz='cdi'
 
 # Utilities
-alias n='nautilus > /dev/null 2>&1 & disown'
+alias n='nautilus . > /dev/null 2>&1 & disown'
 alias lock='xdg-screensaver lock'
 alias stresstest='glmark2-es2-wayland'
 alias todo='grep -rnw --color=auto TODO'
