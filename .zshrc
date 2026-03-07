@@ -68,6 +68,12 @@ export FZF_DEFAULT_OPTS="
 # --- Zoxide ---
 eval "$(zoxide init zsh --cmd cd)"
 
+# --- Kitty Opacity ---
+kitty-opacity() {
+  sed -i "s/^background_opacity .*/background_opacity $1/" ~/.config/kitty/kitty.conf
+  kill -SIGUSR1 $(pidof kitty)
+}
+
 # =============================================================================
 # 5. FUNCTIONS
 # =============================================================================
