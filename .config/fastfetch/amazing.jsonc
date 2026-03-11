@@ -101,6 +101,7 @@
     },
 
     "break",
-    "colors"
+    // show colors scheme
+    // "colors"
   ]
 }
