@@ -18,7 +18,7 @@ alias n='xdg-open .'
 alias lock='xdg-screensaver lock'
 alias stresstest='glmark2-es2-wayland'
 alias todo='grep -rnw --color=auto TODO'
-alias shortcuts='batcat --color=always --style=plain ~/.aliases | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
+alias shortcuts='batcat --color=always --style=plain ~/.aliases | grep -E "alias|{" | fzf --ansi --border-label=" My Shortcuts "'
 
 # Dotfiles
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
@@ -40,5 +40,13 @@ alias gco='git checkout'
 alias gsw='git switch'
 alias lgt='lazygit' # TUI for git
 
+# system
 alias cachy='sudo efibootmgr -n 0001 && sudo reboot'
+alias vol='amixer set Master' # set volume: 70% / 5%+ / mute, unmute
 
+# tools
+alias say='XDG_RUNTIME_DIR=/run/user/1000 edge-playback --voice en-US-AndrewMultilingualNeural --text'
+alias ddgrb='BROWSER=w3m ddgr'
+
+# AI Assistant Function
+ask() { tgpt -q -w "$*" | glow }
