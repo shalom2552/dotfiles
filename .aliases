@@ -6,7 +6,6 @@ alias fm='yazi'
 alias q='exit'
 
 # Replacements
-alias bat='batcat'
 alias ls='eza -G --icons --group-directories-first --git --header'
 alias la='eza -G -a --icons --group-directories-first --git --header'
 alias ll='eza -l --icons --group-directories-first --git --header'
@@ -18,7 +17,7 @@ alias n='xdg-open .'
 alias lock='xdg-screensaver lock'
 alias stresstest='glmark2-es2-wayland'
 alias todo='grep -rnw --color=auto TODO'
-alias shortcuts='batcat --color=always --style=plain ~/.aliases | grep -E "alias|{" | fzf --ansi --border-label=" My Shortcuts "'
+alias shortcuts='bat --color=always --style=plain ~/.aliases | grep -E "alias|{" | fzf --ansi --border-label=" My Shortcuts "'
 
 # Dotfiles
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
@@ -41,7 +40,7 @@ alias gsw='git switch'
 alias lgt='lazygit' # TUI for git
 
 # system
-alias cachy='sudo efibootmgr -n 0001 && sudo reboot'
+alias popos='sudo efibootmgr -n 0000 && sudo reboot'
 alias vol='amixer set Master' # set volume: 70% / 5%+ / mute, unmute
 
 # tools

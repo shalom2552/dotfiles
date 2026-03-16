@@ -51,9 +51,9 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 FD_EXCLUDES='--exclude .git --exclude node_modules --exclude .cache'
-export FZF_DEFAULT_COMMAND="fdfind --type f --hidden --follow $FD_EXCLUDES"
+export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FD_EXCLUDES"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fdfind --type d --hidden --follow $FD_EXCLUDES"
+export FZF_ALT_C_COMMAND="fd --type d --hidden --follow $FD_EXCLUDES"
 
 # FZF visual settings
 export FZF_DEFAULT_OPTS="
@@ -85,10 +85,10 @@ function precmd() {
 # Visual find and open in editor
 vf() {
   local out
-  out=$(fdfind --type f --hidden ${=FD_EXCLUDES} \
+  out=$(fd --type f --hidden ${=FD_EXCLUDES} \
     --exclude .local --exclude .npm --exclude .cargo \
     --exclude .mozilla --exclude .rustup |
-    fzf --multi --preview='batcat --style=numbers --color=always --line-range :500 {}' \
+    fzf --multi --preview='bat --style=numbers --color=always --line-range :500 {}' \
         --bind='?:toggle-preview,ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down')
 
   [[ -n "$out" ]] && ${EDITOR:-nvim} "${(f)out}"
