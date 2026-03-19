@@ -41,7 +41,7 @@ alias gsw='git switch'
 alias lgt='lazygit' # TUI for git
 
 # system
-alias cachy='sudo efibootmgr -n 0001 && sudo reboot'
+alias cachy='sudo efibootmgr -n 0002 && sudo reboot'
 alias vol='amixer set Master' # set volume: 70% / 5%+ / mute, unmute
 
 # tools
