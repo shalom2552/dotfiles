@@ -15,14 +15,8 @@ alias zz='cdi'
 # Utilities
 alias n='xdg-open .'
 alias lock='xdg-screensaver lock'
-alias stresstest='glmark2-es2-wayland'
 alias todo='grep -rnw --color=auto TODO'
 alias shortcuts='bat --color=always --style=plain ~/.aliases | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
-
-# Dotfiles
-alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias dotlgt='lazygit --git-dir=$HOME/.dotfiles --work-tree=$HOME'
-compdef dot=git # This tells Zsh to treat the 'dot' like 'git' 
 
 # Git
 alias ga='git add'
@@ -41,7 +35,6 @@ alias lgt='lazygit' # TUI for git
 
 # Tmux
 alias tdev='tmux-dev'
-alias tdot='tmux-dot'
 alias ta='tmux attach'
 alias tls='tmux ls'
 alias tk='tmux kill-session -t'
