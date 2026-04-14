@@ -15,7 +15,7 @@ My personal configuration files for Linux, managed using [**GNU Stow**](https://
 
 * **Shell:** Zsh + Oh My Zsh + Powerlevel10k
 * **Terminal:** Kitty (Tokyo Night Theme)
-* **Editor:** Neovim ([LazyVim](https://www.lazyvim.org/))
+* **Editor:** Neovim ([LazyVim](https://www.lazyvim.org/)) — included as a [git submodule](.config/nvim)
 * **Version Manager:** fnm (Node.js)
 * **Tools:**
     * `tmux` (terminal multiplexer)
@@ -25,39 +25,40 @@ My personal configuration files for Linux, managed using [**GNU Stow**](https://
     * `fastfetch` (System Info)
     * `bat` & `eza` (Modern `cat` and `ls`)
     * `zoxide` (Smarter cd)
+    * `lazygit` (Git TUI)
 
 ### Neovim Configuration
 
-I use a customized version of [LazyVim](https://github.com/LazyVim/LazyVim).
-* **My Config:** [github.com/shalom2552/nvim](https://github.com/shalom2552/nvim) (Clone this to `~/.config/nvim` to use my setup).
+My Neovim config is included as a git submodule at `.config/nvim/`. It's a customized version of [LazyVim](https://github.com/LazyVim/LazyVim).
+* **Standalone repo:** [github.com/shalom2552/nvim](https://github.com/shalom2552/nvim)
 * **Start Fresh:** If you prefer to build your own, check out the [LazyVim Starter Documentation](https://www.lazyvim.org/).
 
 ## Quick Install
 
 ```bash
-git clone https://github.com/shalom2552/dotfiles-stow.git ~/dotfiles
+git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 chmod +x setup.sh
 ./setup.sh
 ```
 
-> The script will install all dependencies, set up the shell environment, fonts, and symlink all configs using Stow.
+> The script auto-detects your distro (Arch or Debian/Ubuntu) and installs all dependencies, sets up the shell environment, fonts, and symlinks all configs using Stow.
 
 ## Manual Installation
 
+> For Debian/Ubuntu use `sudo apt install` instead of `sudo pacman -S`
 ### 1. Prerequisites
 
-Ensure `git`, `zsh`, and `stow` are installed.
+Ensure `git`, `zsh`, `wget` and `stow` are installed.
 
 ```bash
-sudo pacman -S git zsh stow
-chsh -s $(which zsh)
+sudo pacman -S git zsh wget stow
 ```
 
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/shalom2552/dotfiles-stow.git ~/dotfiles
+git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git ~/dotfiles
 ```
 
 ### 3. Post-Install
@@ -69,12 +70,13 @@ Install the core utilities:
 ```bash
 sudo pacman -S --needed \
   fd bat eza btop ripgrep unzip zoxide \
-  tmux fzf yazi fastfetch \
+  tmux fzf yazi fastfetch lazygit \
   kitty \
-  playerctl \
-  grim slurp wl-clipboard \
   imagemagick ffmpeg \
   python jq stow
+
+# Debian/Ubuntu: some packages have different names (fd-find, python3).
+# (eza, yazi, zoxide, fastfetch, lazygit) are not in default repos.
 ```
 
 #### 2. Shell Environment (Oh My Zsh + Plugins)
@@ -118,7 +120,7 @@ fc-cache -fv
 
 ```bash
 cd ~/dotfiles
-stow -t ~ .
+stow .
 ```
 
 This creates symlinks from `~/dotfiles/` into your home directory for all tracked configs.
@@ -126,6 +128,9 @@ This creates symlinks from `~/dotfiles/` into your home directory for all tracke
 ### 5. Finalize
 
 ```bash
+# Set Zsh as default shell
+chsh -s $(which zsh)
+
 # Switch to Zsh
 exec zsh
 ```
@@ -155,7 +160,7 @@ To re-apply symlinks after adding new files:
 
 ```bash
 cd ~/dotfiles
-stow -t ~ .
+stow .
 ```
 
 ## Troubleshooting
@@ -163,7 +168,7 @@ stow -t ~ .
 **"Command not found" errors?**
 My configuration uses many modern CLI replacements (like `bat` instead of `cat`, or `eza` instead of `ls`). If you see an error like `zsh: command not found: yazi`, it means you haven't installed that specific tool yet.
 
-**Solution:** Install the missing package with `pacman` or `paru`, or remove the alias from `.zshrc`.
+**Solution:** Install the missing package with `pacman` or `apt`, or remove the alias from `.zshrc`.
 
 **Stow conflicts?**
 If `stow` reports conflicts, it means existing files are in the way. Back them up and retry:
@@ -174,5 +179,5 @@ mv ~/.config/kitty/kitty.conf ~/.config/kitty/kitty.conf.bak
 
 # Or use --adopt to pull existing files into the repo
 cd ~/dotfiles
-stow -t ~ --adopt .
+stow --adopt .
 ```

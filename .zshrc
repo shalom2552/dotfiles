@@ -59,9 +59,17 @@ fi
 # =============================================================================
 
 # --- FZF ---
-# Source fzf bindings
-source /usr/share/fzf/key-bindings.zsh
-source /usr/share/fzf/completion.zsh
+# Source fzf bindings (path differs per distro)
+for f in /usr/share/fzf/key-bindings.zsh \
+         /usr/share/doc/fzf/examples/key-bindings.zsh \
+         /usr/share/fzf/shell/key-bindings.zsh; do
+    [[ -f "$f" ]] && source "$f" && break
+done
+for f in /usr/share/fzf/completion.zsh \
+         /usr/share/doc/fzf/examples/completion.zsh \
+         /usr/share/fzf/shell/completion.zsh; do
+    [[ -f "$f" ]] && source "$f" && break
+done
 
 FD_EXCLUDES='--exclude .git --exclude node_modules --exclude .cache'
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FD_EXCLUDES"

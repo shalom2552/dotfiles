@@ -15,25 +15,123 @@ warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 # ---------------------------------------------------
+# 0. Detect distro
+# ---------------------------------------------------
+detect_distro() {
+    if command -v pacman &>/dev/null; then
+        DISTRO="arch"
+    elif command -v apt &>/dev/null; then
+        DISTRO="debian"
+    else
+        error "Unsupported distro. This script supports Arch-based and Debian/Ubuntu-based systems."
+    fi
+    info "Detected distro: $DISTRO"
+}
+
+# ---------------------------------------------------
 # 1. Check we're in the right place
 # ---------------------------------------------------
 if [ ! -d "$DOTFILES_DIR/.git" ]; then
-    error "Expected dotfiles repo at $DOTFILES_DIR. Clone it first:\n  git clone https://github.com/shalom2552/dotfiles-stow.git ~/dotfiles"
+    error "Expected dotfiles repo at $DOTFILES_DIR. Clone it first:\n  git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git ~/dotfiles"
 fi
 
 cd "$DOTFILES_DIR"
+detect_distro
 
 # ---------------------------------------------------
 # 2. Install system packages
 # ---------------------------------------------------
-info "Installing system packages..."
-sudo pacman -S --needed --noconfirm \
-    git zsh stow curl unzip \
-    fd bat eza btop ripgrep zoxide \
-    tmux fzf yazi fastfetch \
-    kitty \
-    imagemagick ffmpeg \
-    python jq
+install_arch() {
+    info "Installing packages (pacman)..."
+    sudo pacman -S --needed --noconfirm \
+        git zsh stow curl wget unzip \
+        fd bat eza btop ripgrep zoxide \
+        tmux fzf yazi fastfetch lazygit \
+        kitty \
+        imagemagick ffmpeg \
+        python jq
+}
+
+install_debian() {
+    info "Installing packages (apt)..."
+    sudo apt update
+    sudo apt install -y \
+        git zsh stow curl wget unzip gnupg software-properties-common \
+        fd-find bat btop ripgrep \
+        tmux fzf \
+        kitty \
+        imagemagick ffmpeg \
+        python3 jq fontconfig
+
+    # fd-find and bat install with different binary names on Debian/Ubuntu
+    # Create symlinks so configs and aliases work the same way
+    if [ ! -L "$HOME/.local/bin/fd" ] && command -v fdfind &>/dev/null; then
+        mkdir -p "$HOME/.local/bin"
+        ln -sf "$(which fdfind)" "$HOME/.local/bin/fd"
+        info "Symlinked fdfind → fd"
+    fi
+    if [ ! -L "$HOME/.local/bin/bat" ] && command -v batcat &>/dev/null; then
+        mkdir -p "$HOME/.local/bin"
+        ln -sf "$(which batcat)" "$HOME/.local/bin/bat"
+        info "Symlinked batcat → bat"
+    fi
+
+    # Tools not in default Ubuntu repos — install from external sources
+    install_debian_extras
+}
+
+install_debian_extras() {
+    # eza
+    if ! command -v eza &>/dev/null; then
+        info "Installing eza..."
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        sudo apt update
+        sudo apt install -y eza
+    fi
+
+    # zoxide
+    if ! command -v zoxide &>/dev/null; then
+        info "Installing zoxide..."
+        curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+    fi
+
+    # fastfetch
+    if ! command -v fastfetch &>/dev/null; then
+        info "Installing fastfetch..."
+        sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
+        sudo apt update
+        sudo apt install -y fastfetch
+    fi
+
+    # yazi — binary from GitHub releases
+    if ! command -v yazi &>/dev/null; then
+        info "Installing yazi..."
+        YAZI_VERSION=$(curl -sS https://api.github.com/repos/sxyazi/yazi/releases/latest | jq -r '.tag_name')
+        curl -fLO "https://github.com/sxyazi/yazi/releases/download/${YAZI_VERSION}/yazi-x86_64-unknown-linux-gnu.zip"
+        unzip -o yazi-x86_64-unknown-linux-gnu.zip
+        sudo mv yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/
+        sudo mv yazi-x86_64-unknown-linux-gnu/ya /usr/local/bin/
+        rm -rf yazi-x86_64-unknown-linux-gnu yazi-x86_64-unknown-linux-gnu.zip
+    fi
+
+    # lazygit
+    if ! command -v lazygit &>/dev/null; then
+        info "Installing lazygit..."
+        LAZYGIT_VERSION=$(curl -sS https://api.github.com/repos/jesseduffield/lazygit/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+        curl -fLO "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        tar xf "lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" lazygit
+        sudo mv lazygit /usr/local/bin/
+        rm -f "lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+    fi
+}
+
+if [ "$DISTRO" = "arch" ]; then
+    install_arch
+else
+    install_debian
+fi
 
 # ---------------------------------------------------
 # 3. Shell environment (Oh My Zsh + Plugins)
@@ -113,7 +211,13 @@ else
 fi
 
 # ---------------------------------------------------
-# 6. Symlink configs with Stow
+# 6. Initialize submodules (Neovim config)
+# ---------------------------------------------------
+info "Initializing git submodules..."
+git submodule update --init --recursive
+
+# ---------------------------------------------------
+# 7. Symlink configs with Stow
 # ---------------------------------------------------
 info "Symlinking configs with Stow..."
 
@@ -149,7 +253,7 @@ stow .
 info "All configs symlinked!"
 
 # ---------------------------------------------------
-# 7. Set Zsh as default shell
+# 8. Set Zsh as default shell
 # ---------------------------------------------------
 if [ "$SHELL" != "$(which zsh)" ]; then
     info "Setting Zsh as default shell..."
