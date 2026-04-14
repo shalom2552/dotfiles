@@ -2,7 +2,7 @@
 
 My personal configuration files for Linux, managed using [**GNU Stow**](https://www.gnu.org/software/stow/). This setup keeps the home directory clean with symlinks managed from a single directory.
 
-> **Hyprland desktop configuration** (Hyprland, Waybar, Hypridle, Hyprlock, SwayOSD, etc.) is maintained in a [separate repository](https://github.com/shalom2552/hypr-dotfiles).
+> **Hyprland desktop configuration** (Hyprland, Waybar, Hypridle, Hyprlock, SwayOSD, etc.) is maintained in a [separate repository](https://github.com/shalom2552/hyprconf).
 
 
 ## Screenshots
