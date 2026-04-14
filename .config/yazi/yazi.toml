@@ -1,0 +1,27 @@
+[mgr]
+show_hidden = true
+ratio = [1, 1, 4]   # panes size ratio
+
+# show git status for files
+[[plugin.prepend_fetchers]]
+id  = "git"
+url = "*"
+run = "git"
+
+# show git status for directories
+[[plugin.prepend_fetchers]]
+id  = "git"
+url = "*/"
+run = "git"
+
+# preview scroll
+[[manager.prepend_keymap]]
+on = "J"
+run = "seek 1"
+desc = "Seek down 1 line in preview"
+
+[[manager.prepend_keymap]]
+on = "K"
+run = "seek -1"
+desc = "Seek up 1 line in preview"
+

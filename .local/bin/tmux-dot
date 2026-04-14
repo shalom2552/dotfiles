@@ -1,0 +1,34 @@
+#!/bin/bash
+# ~/.local/bin/tmux-dot.sh
+
+SESSION="Dotfiles"
+DIR="$HOME/.config/"
+
+# Attach if already exists
+tmux has-session -t $SESSION 2>/dev/null && tmux attach -t $SESSION && exit
+
+# Window 1: Neovim
+tmux new-session -d -s $SESSION -n "Editor" -c "$DIR"
+tmux send-keys -t $SESSION:1 "nvim" C-m
+
+# Window 2: Terminal (split into two panes)
+tmux new-window -t $SESSION -n "Terminal" -c "$DIR"
+tmux split-window -h -t $SESSION:2 -c "$DIR"
+
+# Window 3: Git
+tmux new-window -t $SESSION -n "Lazygit" -c "$DIR"
+tmux send-keys -t $SESSION:3 "dotlgt" C-m
+
+# Window 4: Yazi
+tmux new-window -t $SESSION -n "Yazi" -c "$DIR"
+tmux send-keys -t $SESSION:4 "yazi" C-m
+
+# Window 4: Monitor
+tmux new-window -t $SESSION -n "Monitor" -c "$DIR"
+tmux send-keys -t $SESSION:5 "btop" C-m
+
+# Focus on editor
+tmux select-window -t $SESSION:1
+
+tmux attach -t $SESSION
+
