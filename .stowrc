@@ -1,0 +1,5 @@
+--target=~
+--ignore='setup.sh'
+--ignore='README.md'
+--ignore='LICENSE'
+--ignore='CHEATSHEET.md'
