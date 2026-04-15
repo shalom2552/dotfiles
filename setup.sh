@@ -17,6 +17,15 @@ info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
+on_error() {
+    error "Setup failed at line $LINENO."
+    info "Try running the script again:"
+    echo ""
+    echo "    cd ~/dotfiles && ./setup.sh"
+    echo ""
+}
+trap on_error ERR
+
 # ---------------------------------------------------
 # 0. Detect distro
 # ---------------------------------------------------
