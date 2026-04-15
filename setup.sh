@@ -84,13 +84,16 @@ install_debian() {
 }
 
 install_debian_extras() {
+    TMP_DIR=$(mktemp -d)
+    trap 'rm -rf "$TMP_DIR"' EXIT
 
     # neovim — AppImage (Ubuntu repos have outdated version)
     if ! command -v nvim &>/dev/null; then
         info "Installing Neovim (AppImage)..."
-        curl -fLO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
-        chmod u+x nvim-linux-x86_64.appimage
-        sudo mv nvim-linux-x86_64.appimage /usr/local/bin/nvim
+        curl -fLo "$TMP_DIR/nvim-linux-x86_64.appimage" \
+            https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+        chmod u+x "$TMP_DIR/nvim-linux-x86_64.appimage"
+        sudo mv "$TMP_DIR/nvim-linux-x86_64.appimage" /usr/local/bin/nvim
     fi
 
     # eza
@@ -121,21 +124,21 @@ install_debian_extras() {
     if ! command -v yazi &>/dev/null; then
         info "Installing yazi..."
         YAZI_VERSION=$(curl -sS https://api.github.com/repos/sxyazi/yazi/releases/latest | jq -r '.tag_name')
-        curl -fLO "https://github.com/sxyazi/yazi/releases/download/${YAZI_VERSION}/yazi-x86_64-unknown-linux-gnu.zip"
-        unzip -o yazi-x86_64-unknown-linux-gnu.zip
-        sudo mv yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/
-        sudo mv yazi-x86_64-unknown-linux-gnu/ya /usr/local/bin/
-        rm -rf yazi-x86_64-unknown-linux-gnu yazi-x86_64-unknown-linux-gnu.zip
+        curl -fLo "$TMP_DIR/yazi.zip" \
+            "https://github.com/sxyazi/yazi/releases/download/${YAZI_VERSION}/yazi-x86_64-unknown-linux-gnu.zip"
+        unzip -o "$TMP_DIR/yazi.zip" -d "$TMP_DIR"
+        sudo mv "$TMP_DIR/yazi-x86_64-unknown-linux-gnu/yazi" /usr/local/bin/
+        sudo mv "$TMP_DIR/yazi-x86_64-unknown-linux-gnu/ya" /usr/local/bin/
     fi
 
     # lazygit
     if ! command -v lazygit &>/dev/null; then
         info "Installing lazygit..."
         LAZYGIT_VERSION=$(curl -sS https://api.github.com/repos/jesseduffield/lazygit/releases/latest | jq -r '.tag_name' | sed 's/^v//')
-        curl -fLO "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-        tar xf "lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" lazygit
-        sudo mv lazygit /usr/local/bin/
-        rm -f "lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        curl -fLo "$TMP_DIR/lazygit.tar.gz" \
+            "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        tar xf "$TMP_DIR/lazygit.tar.gz" -C "$TMP_DIR" lazygit
+        sudo mv "$TMP_DIR/lazygit" /usr/local/bin/
     fi
 }
 
@@ -267,7 +270,7 @@ else
     done < <(find . -not -path './.git/*' -not -name '.git' \
                   -not -name 'setup.sh' -not -name 'README.md' \
                   -not -name 'LICENSE' -not -name '.gitignore' \
-                  -not -name 'CHEATSHEET.md' \
+                  -not -name '.gitmodules' -not -name '.stowrc' \
                   -type f | sed 's|^\./||')
 
     if [ "$backup_needed" = true ]; then

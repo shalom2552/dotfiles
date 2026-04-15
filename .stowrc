@@ -2,4 +2,6 @@
 --ignore='setup.sh'
 --ignore='README.md'
 --ignore='LICENSE'
---ignore='CHEATSHEET.md'
+--ignore='.gitignore'
+--ignore='.gitmodules'
+--ignore='.stowrc'
