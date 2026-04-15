@@ -9,7 +9,7 @@ My personal configuration files for Linux, managed using [**GNU Stow**](https://
 
 | Main Desktop | Tools (Btop, Yazi, Fastfetch) |
 | :---: | :---: |
-| <img alt="home" src="https://github.com/user-attachments/assets/2a7f666b-2405-40de-9b3c-2edb5a1e5de7" /> | <img alt="btop_yazi_fastfetch" src="https://github.com/user-attachments/assets/c4dbe1ea-19f0-4cd7-9385-1a4302404d88" /> |
+| <img alt="home" src="https://github.com/user-attachments/assets/6827a573-9d31-46a8-b247-d7b902fbc7c9" /> | <img alt="btop_yazi_fastfetch" src="https://github.com/user-attachments/assets/d886f535-ad41-44fa-a00b-1e869a417f2d" /> |
 
 ## Tracked Configurations
 
