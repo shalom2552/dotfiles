@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Tdev
+GenericName=Terminal Multiplexer
+Comment=Launch Terminal Multiplexer
+Exec=~/.local/bin/tmux-dev
+Icon=tmux
+Terminal=true
+Categories=Utility
+Keywords=tmux;teminal;
+StartupWMClass=kitty
+StartupNotify=true

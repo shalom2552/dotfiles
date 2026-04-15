@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Tmux
+GenericName=Terminal Multiplexer
+Comment=Launch Terminal Multiplexer
+Exec=tmux
+Icon=tmux
+Terminal=true
+Categories=Utility
+Keywords=tmux;teminal;
+StartupWMClass=kitty
+StartupNotify=true
