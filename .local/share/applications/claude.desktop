@@ -5,7 +5,6 @@ Comment=Open Claude in a standalone window
 Exec=chromium --app=https://claude.ai/new
 Icon=claude
 Type=Application
-Categories=Network;Utility;
+Categories=Utility;
 Terminal=false
-Categories=Utils;
 StartupWMClass=chrome-claude.ai__new-Default
