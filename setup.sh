@@ -48,6 +48,7 @@ install_arch() {
         fd bat eza btop ripgrep zoxide \
         tmux fzf yazi fastfetch lazygit \
         kitty \
+        neovim \
         imagemagick ffmpeg \
         python jq
 }
@@ -56,12 +57,16 @@ install_debian() {
     info "Installing packages (apt)..."
     sudo apt update
     sudo apt install -y \
-        git zsh stow curl wget unzip gnupg software-properties-common \
+        git zsh stow curl wget unzip gnupg \
+        software-properties-common locales libfuse2 \
         fd-find bat btop ripgrep \
         tmux fzf \
         kitty \
         imagemagick ffmpeg \
         python3 jq fontconfig
+
+    # Generate locales
+    sudo locale-gen en_US.UTF-8
 
     # fd-find and bat install with different binary names on Debian/Ubuntu
     # Create symlinks so configs and aliases work the same way
@@ -81,6 +86,15 @@ install_debian() {
 }
 
 install_debian_extras() {
+
+    # neovim — AppImage (Ubuntu repos have outdated version)
+    if ! command -v nvim &>/dev/null; then
+        info "Installing Neovim (AppImage)..."
+        curl -fLO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+        chmod u+x nvim-linux-x86_64.appimage
+        sudo mv nvim-linux-x86_64.appimage /usr/local/bin/nvim
+    fi
+
     # eza
     if ! command -v eza &>/dev/null; then
         info "Installing eza..."
@@ -237,34 +251,41 @@ git submodule update --init --recursive
 # ---------------------------------------------------
 info "Symlinking configs with Stow..."
 
-# Back up any existing files that would conflict
-backup_needed=false
-while IFS= read -r file; do
-    target="$HOME/$file"
-    if [ -e "$target" ] && [ ! -L "$target" ]; then
-        backup_needed=true
-        mkdir -p "$BACKUP_DIR/$(dirname "$file")"
-        mv "$target" "$BACKUP_DIR/$file"
-        warn "Backed up $target → $BACKUP_DIR/$file"
+# Skip backup if stow was already run (symlinks already exist)
+if [ -L "$HOME/.zshrc" ] && [ "$(readlink "$HOME/.zshrc")" = "dotfiles/.zshrc" ]; then
+    info "Stow already configured, re-stowing..."
+    stow -R .
+else
+    # Back up any existing files that would conflict
+    backup_needed=false
+    while IFS= read -r file; do
+        target="$HOME/$file"
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+            backup_needed=true
+            mkdir -p "$BACKUP_DIR/$(dirname "$file")"
+            mv "$target" "$BACKUP_DIR/$file"
+            warn "Backed up $target → $BACKUP_DIR/$file"
+        fi
+    done < <(find . -not -path './.git/*' -not -name '.git' \
+                  -not -name 'setup.sh' -not -name 'README.md' \
+                  -not -name 'LICENSE' -not -name '.gitignore' \
+                  -not -name 'CHEATSHEET.md' \
+                  -type f | sed 's|^\./||')
+
+    if [ "$backup_needed" = true ]; then
+        info "Existing configs backed up to $BACKUP_DIR"
     fi
-done < <(find . -not -path './.git/*' -not -name '.git' \
-              -not -name 'setup.sh' -not -name 'README.md' \
-              -not -name 'LICENSE' -not -name '.gitignore' \
-              -not -name 'CHEATSHEET.md' \
-              -type f | sed 's|^\./||')
 
-if [ "$backup_needed" = true ]; then
-    info "Existing configs backed up to $BACKUP_DIR"
+    # Oh My Zsh installer may have created a default .zshrc — remove it before stowing
+    if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+        warn "Removing default .zshrc (ours will be symlinked)"
+        mkdir -p "$BACKUP_DIR"
+        mv "$HOME/.zshrc" "$BACKUP_DIR/.zshrc" 2>/dev/null || rm "$HOME/.zshrc"
+    fi
+
+    # Stow all files
+    stow .
 fi
-
-# Oh My Zsh installer may have created a default .zshrc — remove it before stowing
-if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-    warn "Removing default .zshrc (ours will be symlinked)"
-    mkdir -p "$BACKUP_DIR"
-    mv "$HOME/.zshrc" "$BACKUP_DIR/.zshrc" 2>/dev/null || rm "$HOME/.zshrc"
-fi
-
-stow .
 
 info "All configs symlinked!"
 
