@@ -4,6 +4,9 @@ set -e
 DOTFILES_DIR="$HOME/dotfiles"
 BACKUP_DIR="$HOME/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)"
 
+# Ensure ~/.local/bin is on PATH so command -v checks find tools installed there
+export PATH="$HOME/.local/bin:$PATH"
+
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -64,7 +67,9 @@ install_debian() {
         python3 jq fontconfig
 
     # Generate locales
-    sudo locale-gen en_US.UTF-8
+    if ! locale -a 2>/dev/null | grep -qi "en_US.utf8\|en_US.UTF-8"; then
+        sudo locale-gen en_US.UTF-8
+    fi
 
     # fd-find and bat install with different binary names on Debian/Ubuntu
     # Create symlinks so configs and aliases work the same way
@@ -87,13 +92,12 @@ install_debian_extras() {
     TMP_DIR=$(mktemp -d)
     trap 'rm -rf "$TMP_DIR"' EXIT
 
-    # neovim — AppImage (Ubuntu repos have outdated version)
+    # neovim — tarball (Ubuntu repos have outdated version; no FUSE needed, works everywhere)
     if ! command -v nvim &>/dev/null; then
-        info "Installing Neovim (AppImage)..."
-        curl -fLo "$TMP_DIR/nvim-linux-x86_64.appimage" \
-            https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
-        chmod u+x "$TMP_DIR/nvim-linux-x86_64.appimage"
-        sudo mv "$TMP_DIR/nvim-linux-x86_64.appimage" /usr/local/bin/nvim
+        info "Installing Neovim..."
+        curl -fLo "$TMP_DIR/nvim-linux-x86_64.tar.gz" \
+            https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+        sudo tar xzf "$TMP_DIR/nvim-linux-x86_64.tar.gz" -C /usr/local --strip-components=1
     fi
 
     # eza
@@ -224,9 +228,10 @@ fi
 # ---------------------------------------------------
 # 5. Node Version Manager (fnm)
 # ---------------------------------------------------
-if ! command -v fnm &>/dev/null; then
+if ! command -v fnm &>/dev/null && [ ! -x "$HOME/.local/share/fnm/fnm" ]; then
     info "Installing fnm..."
-    curl -fsSL https://fnm.vercel.app/install | bash
+    # --skip-shell: fnm init already in dotfiles .zshrc and .bashrc
+    curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
 
     # Source fnm for current session (installer adds it to shell rc for future sessions)
     FNM_PATH="$HOME/.local/share/fnm"
@@ -295,7 +300,9 @@ info "All configs symlinked!"
 # ---------------------------------------------------
 if [ "$SHELL" != "$(which zsh)" ]; then
     info "Setting Zsh as default shell..."
-    chsh -s "$(which zsh)"
+    if ! chsh -s "$(which zsh)"; then
+        warn "chsh failed. Set manually: chsh -s \$(which zsh)"
+    fi
 fi
 
 # ---------------------------------------------------

@@ -15,11 +15,11 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 # check if repo already exists
 if [ -d "$DOTFILES_DIR" ]; then
-    warn "~/dotfiles already exists."
-    info "Run setup.sh from inside it."
-    echo "          cd ~/dotfiles"
-    echo "          chmod +x ./setup.sh"
-    echo "          ./setup.sh"
+    warn "~/dotfiles already exists. Skipping clone."
+    info "To run setup manually:"
+    echo ""
+    echo "    cd ~/dotfiles && chmod +x setup.sh && ./setup.sh"
+    echo ""
     exit 1
 fi
 
