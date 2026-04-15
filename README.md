@@ -96,7 +96,17 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
   ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 ```
 
-#### 3. Node Version Manager (fnm)
+#### 3. Tmux Plugins
+
+```bash
+# Install TPM (Tmux Plugin Manager)
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+
+# Install plugins
+~/.config/tmux/plugins/tpm/bin/install_plugins
+```
+
+#### 4. Node Version Manager (fnm)
 
 ```bash
 curl -fsSL https://fnm.vercel.app/install | bash
@@ -104,7 +114,7 @@ source ~/.zshrc
 fnm install --lts
 ```
 
-#### 4. Fonts
+#### 5. Fonts
 
 Download and install JetBrainsMono Nerd Font (required for icons in Kitty and Powerlevel10k):
 

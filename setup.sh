@@ -174,6 +174,22 @@ else
 fi
 
 # ---------------------------------------------------
+# 3.5 Tmux Plugin Manager (TPM)
+# ---------------------------------------------------
+TPM_DIR="$HOME/.config/tmux/plugins/tpm"
+if [ ! -d "$TPM_DIR" ]; then
+    info "Installing TPM (Tmux Plugin Manager)..."
+    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+    info "Installing tmux plugins..."
+    tmux new-session -d -s _setup \
+        "sleep 3 \
+        && ~/.config/tmux/plugins/tpm/bin/install_plugins \
+        && tmux kill-session -t _setup"
+else
+    info "TPM already installed, skipping."
+fi
+
+# ---------------------------------------------------
 # 4. Fonts
 # ---------------------------------------------------
 FONT_DIR="$HOME/.local/share/fonts"
