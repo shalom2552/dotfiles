@@ -36,7 +36,7 @@ My Neovim config is included as a git submodule at `.config/nvim/`. It's a custo
 ## Quick Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/shalom2552/dotfiles/main/install.sh | bash
+bash <(curl -fsSL https://raw.githubusercontent.com/shalom2552/dotfiles/main/install.sh)
 ```
 
 > `install.sh` installs `git`, clones the repo, and runs `setup.sh` to handle dependencies, shell configuration, and Stow symlinks.
