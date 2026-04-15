@@ -36,13 +36,10 @@ My Neovim config is included as a git submodule at `.config/nvim/`. It's a custo
 ## Quick Install
 
 ```bash
-git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-chmod +x setup.sh
-./setup.sh
+curl -fsSL https://raw.githubusercontent.com/shalom2552/dotfiles/main/install.sh | bash
 ```
 
-> The script auto-detects your distro (Arch or Debian/Ubuntu) and installs all dependencies, sets up the shell environment, fonts, and symlinks all configs using Stow.
+> `install.sh` installs `git`, clones the repo, and runs `setup.sh` to handle dependencies, shell configuration, and Stow symlinks.
 
 ## Manual Installation
 

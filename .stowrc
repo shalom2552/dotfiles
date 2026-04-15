@@ -1,7 +1,13 @@
 --target=~
+
+--ignore='.stowrc'
+
 --ignore='setup.sh'
+--ignore='install.sh'
+
 --ignore='README.md'
 --ignore='LICENSE'
+
 --ignore='.gitignore'
 --ignore='.gitmodules'
---ignore='.stowrc'
+
