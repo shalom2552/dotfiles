@@ -18,11 +18,10 @@ warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 on_error() {
-    error "Setup failed at line $LINENO."
-    info "Try running the script again:"
-    echo ""
-    echo "    cd ~/dotfiles && ./setup.sh"
-    echo ""
+    echo -e "\n${RED}[ERROR]${NC} Setup failed at line $LINENO.\n"
+    echo -e "  Try run setup manually:\n"
+    echo -e "    cd ~/dotfiles && ./setup.sh\n"
+    exit 1
 }
 trap on_error ERR
 
