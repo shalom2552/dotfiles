@@ -9,6 +9,7 @@ alias q='exit'
 alias ls='eza -G --icons --group-directories-first --git --header'
 alias la='eza -a --icons --group-directories-first --git --header'
 alias ll='eza -l --icons --group-directories-first --git --header'
+alias lsa='eza -al --icons --group-directories-first --git --header'
 alias tree='eza -T --icons --git'
 alias zz='cdi'
 
