@@ -307,11 +307,30 @@ info "All configs symlinked!"
 # ---------------------------------------------------
 # 8. Set Zsh as default shell
 # ---------------------------------------------------
-if [ "$SHELL" != "$(which zsh)" ]; then
-    info "Setting Zsh as default shell..."
-    if ! chsh -s "$(which zsh)"; then
+ZSH_PATH=$(which zsh)
+
+# Ensure zsh is in /etc/shells
+if ! grep -qF "$ZSH_PATH" /etc/shells; then
+    info "Adding $ZSH_PATH to /etc/shells..."
+    echo "$ZSH_PATH" | sudo tee -a /etc/shells > /dev/null
+fi
+
+# Try chsh first
+if [ "$SHELL" != "$ZSH_PATH" ]; then
+    info "Setting zsh as default shell..."
+    if chsh -s "$ZSH_PATH"; then
+        info "Default shell changed. Log out and back in to take effect."
+    else
         warn "chsh failed. Set manually: chsh -s \$(which zsh)"
     fi
+fi
+
+# On Debian/Ubuntu: set GNOME Terminal default shell to zsh if installed
+if [ "$DISTRO" = "debian" ] && command -v gsettings &>/dev/null && gsettings get org.gnome.Terminal.ProfilesList default &>/dev/null; then
+    info "Setting GNOME Terminal default shell to zsh..."
+    PROFILE=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d "'")
+    gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${PROFILE}/" use-custom-command true
+    gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${PROFILE}/" custom-command "$ZSH_PATH"
 fi
 
 # ---------------------------------------------------
