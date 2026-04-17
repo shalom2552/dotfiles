@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 
 # Core
+alias shortcuts='bat ~/.aliases --color=always --style=plain | grep "alias" | sed s/alias// | fzf --ansi --border-label=" Aliases "'
+alias shtcts='shortcuts'
 alias v='nvim'
 alias fm='yazi'
 alias q='exit'
@@ -16,10 +18,8 @@ alias df='duf'
 alias ps='procs'
 
 # Utilities
-alias n='xdg-open . 2>/dev/null'
-alias lock='xdg-screensaver lock'
 alias todo='grep -rnw --color=auto TODO'
-alias shortcuts='bat --color=always --style=plain ~/.aliases | grep "alias" | fzf --ansi --border-label=" My Shortcuts "'
+alias matrix='unimatrix -ab -c green -s 96'
 
 # Git
 alias ga='git add'
@@ -34,15 +34,15 @@ alias gdf='git diff'
 alias gcm='git commit -m'
 alias gco='git checkout'
 alias gsw='git switch'
-alias lgt='lazygit' # TUI for git
+alias lgt='lazygit'
 
 # Tmux
 alias tdev='tmux-dev'
-alias ta='tmux attach'
+alias ta='tmux attach -t'
 alias tls='tmux ls'
 alias tk='tmux kill-session -t'
 
 # System
 alias vol='amixer set Master'
-alias logout='hyprctl dispatch exit'
-alias matrix='unimatrix -ab -c green -s 96'
+alias n='xdg-open . 2>/dev/null'
+alias lock='xdg-screensaver lock'
