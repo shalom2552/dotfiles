@@ -70,7 +70,7 @@ sudo pacman -S --needed \
   tmux fzf yazi fastfetch lazygit \
   kitty chromium \
   imagemagick ffmpeg \
-  python jq stow
+  python jq stow duf
 
 # Debian/Ubuntu: some packages have different names (fd-find, python3).
 # (eza, yazi, zoxide, fastfetch, lazygit) are not in default repos.

@@ -60,7 +60,7 @@ install_arch() {
         tmux fzf yazi fastfetch lazygit \
         kitty neovim chromium \
         imagemagick ffmpeg \
-        python jq
+        python jq duf
 }
 
 install_debian() {
@@ -72,7 +72,8 @@ install_debian() {
         fd-find bat btop ripgrep \
         tmux fzf kitty chromium \
         imagemagick ffmpeg \
-        python3 jq fontconfig
+        python3 jq duf \
+        fontconfig
 
     # Generate locales
     if ! locale -a 2>/dev/null | grep -qi "en_US.utf8\|en_US.UTF-8"; then
