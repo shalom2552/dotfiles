@@ -13,6 +13,7 @@ alias lsa='eza -al --icons --group-directories-first --git --header'
 alias tree='eza -T --icons --git'
 alias zz='cdi'
 alias df='duf'
+alias ps='procs'
 
 # Utilities
 alias n='xdg-open . 2>/dev/null'

@@ -68,9 +68,8 @@ Install the core utilities:
 sudo pacman -S --needed \
   fd bat eza btop ripgrep unzip zoxide \
   tmux fzf yazi fastfetch lazygit \
-  kitty chromium \
-  imagemagick ffmpeg \
-  python jq stow duf
+  kitty chromium imagemagick ffmpeg \
+  python jq stow duf procs
 
 # Debian/Ubuntu: some packages have different names (fd-find, python3).
 # (eza, yazi, zoxide, fastfetch, lazygit) are not in default repos.
