@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+# ~/.local/bin/launch
+# Author: shalom2552
+# Date:   2026-04-17
+#
+# Fuzzy application launcher. Reads installed .desktop entries, presents them
+# via fzf, and launches the selection. Works in any terminal on any distro.
+#
+# Usage: launch [options] [query]
+#
+# Options:
+#   --print       Print the selected .desktop file path instead of launching.
+#                 Intended for WM popup wrappers that handle their own dispatch.
+#   --refresh     Force-rebuild the app cache and exit.
+#   -h, --help    Show this help message.
+#
+# Behaviour:
+#   GUI apps    → launched detached (survives terminal closing)
+#   TUI apps    → replace the current shell (exec in-place)
+#   Auto-select → if [query] matches exactly one app, it launches immediately.
+#
+# Cache: app list is cached at /tmp/launch-cache for 24h for fast startup.
+
+set -uo pipefail
+
+
+# ==== CONSTANTS ====
+
+CACHE_FILE="/tmp/launch-cache"
+CACHE_TTL=$((60 * 60 * 24))
+
+
+# ==== ARGS ====
+
+usage() {
+    cat <<EOF
+Usage: launch [options] [query]
+
+Fuzzy application launcher over installed .desktop entries.
+
+Options:
+  -p, --print     Print selected .desktop path instead of launching.
+                  For WM popup wrappers that handle their own dispatch.
+  -r, --refresh   Force-rebuild the app cache and exit.
+  -h, --help      Show this help message.
+
+Arguments:
+  query           (Optional) Initial search string. If only one match 
+                  exists, it is selected automatically (--select-1).
+
+Examples:
+  launch          # Open interactive picker
+  launch firefox  # Search for firefox, run immediately if unique
+  launch -p       # Print selected .desktop path to stdout
+
+Behaviour:
+  GUI apps  → launched detached (survives terminal closing)
+  TUI apps  → replace the current shell (exec in-place)
+
+Cache is stored at $CACHE_FILE and refreshed every 24h.
+Inside the picker, ctrl-r clears the cache and reopens.
+EOF
+}
+
+PRINT_MODE=false
+QUERY=""
+
+for arg in "$@"; do
+    case "$arg" in
+        -p|--print)   PRINT_MODE=true ;;
+        -r|--refresh) rm -f "$CACHE_FILE"; echo "Cache cleared."; exit 0 ;;
+        -h|--help)    usage; exit 0 ;;
+        -*) echo "Unknown option: $arg" >&2; usage >&2; exit 1 ;;
+        *)  [[ -z "$QUERY" ]] && QUERY="$arg" ;;
+    esac
+done
+
+
+# ==== CACHE ====
+
+cache_is_stale() {
+    [[ ! -f "$CACHE_FILE" ]] && return 0
+    local age=$(( $(date +%s) - $(stat -c %Y "$CACHE_FILE") ))
+    (( age > CACHE_TTL ))
+}
+
+if cache_is_stale; then
+    IFS=':' read -ra dirs <<< "${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+    {
+        for dir in "${dirs[@]}"; do
+            app_dir="$dir/applications"
+            [[ -d "$app_dir" ]] || continue
+
+            while IFS= read -r -d '' file; do
+                # Skip hidden / system-only entries
+                grep -q "^NoDisplay=true" "$file" && continue
+                grep -q "^Hidden=true"    "$file" && continue
+
+                name=$(grep "^Name=" "$file" | head -1 | cut -d= -f2-)
+                [[ -n "$name" ]] || continue
+
+                printf '%s\t%s\n' "$name" "$file"
+            done < <(find "$app_dir" -name "*.desktop" -print0 2>/dev/null)
+        done
+    } | sort -u -t$'\t' -k1,1 > "$CACHE_FILE"
+fi
+
+
+# ==== PICK ====
+
+selected=$(
+    awk -F'\t' '{print $1}' "$CACHE_FILE" \
+    | fzf \
+        --prompt="  launch > " \
+        --query="$QUERY" \
+        --select-1 \
+        --header="Applications  ·  ctrl-r to refresh cache" \
+        --border-label=" Application Launcher " \
+        --border-label-pos=center \
+        --bind="ctrl-r:execute(rm -f '$CACHE_FILE')+abort" \
+        --preview="grep -m1 '^Comment=' \$(awk -F'\t' -v name='{}' '\$1 == name {print \$2}' '$CACHE_FILE') | cut -d= -f2- || echo 'No description'" \
+        --preview-window="top:1:wrap" \
+        --no-info \
+        --border=rounded \
+        --padding=1 \
+        --height=100%
+) || exit 0
+
+
+# ==== LAUNCH ====
+
+desktop_file=$(awk -F'\t' -v name="$selected" '$1 == name { print $2; exit }' "$CACHE_FILE")
+app_id="$(basename "$desktop_file" .desktop)"
+
+is_terminal_app=no
+grep -q "^Terminal=true" "$desktop_file" && is_terminal_app=yes
+
+# Strip .desktop field codes (%f %F %u %U etc.) from Exec= line
+exec_cmd=$(grep -m1 "^Exec=" "$desktop_file" | cut -d= -f2- | sed 's/ %[a-zA-Z]//g')
+
+if $PRINT_MODE; then
+    echo "$desktop_file"
+    exit 0
+fi
+
+if [[ "$is_terminal_app" == "yes" ]]; then
+    exec bash -c "$exec_cmd"
+else
+    (gtk-launch "$app_id" > /dev/null 2>&1 &)
+fi

@@ -73,6 +73,7 @@ install_debian() {
         tmux fzf kitty chromium \
         imagemagick ffmpeg fontconfig \
         python3 jq duf procs \
+        libgtk-3-bin \
 
     # Generate locales
     if ! locale -a 2>/dev/null | grep -qi "en_US.utf8\|en_US.UTF-8"; then
