@@ -112,19 +112,20 @@ fi
 selected=$(
     awk -F'\t' '{print $1}' "$CACHE_FILE" \
     | fzf \
-        --prompt="  launch > " \
+        --prompt="launch > " --pointer="▶" --marker="✓" \
         --query="$QUERY" \
         --select-1 \
-        --header="Applications  ·  ctrl-r to refresh cache" \
         --border-label=" Application Launcher " \
         --border-label-pos=center \
         --bind="ctrl-r:execute(rm -f '$CACHE_FILE')+abort" \
-        --preview="grep -m1 '^Comment=' \$(awk -F'\t' -v name='{}' '\$1 == name {print \$2}' '$CACHE_FILE') | cut -d= -f2- || echo 'No description'" \
-        --preview-window="top:1:wrap" \
+        --preview="grep -m1 '^Comment=' \$(awk -F'\t' -v name={} '\$1 == name {print \$2}' '$CACHE_FILE') | cut -d= -f2- || echo 'No description'" \
+        --preview-window="top:1:wrap:noinfo" \
         --no-info \
         --border=rounded \
-        --padding=1 \
-        --height=100%
+        --height=100% \
+        --color=fg:#c0caf5,bg:-1,hl:#bb9af7 \
+        --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff \
+        --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff \
 ) || exit 0
 
 

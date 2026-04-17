@@ -79,9 +79,8 @@ export FZF_ALT_C_COMMAND="fd --type d --hidden --follow $FD_EXCLUDES"
 # FZF visual settings
 export FZF_DEFAULT_OPTS="
 --prompt='🔍 ' --pointer='▶' --marker='✓'
-  --border
+  --border --height 100% --border
   --bind 'ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down'
-  --height 100% --layout=reverse --border --margin=5% --padding=2%
   --color=fg:#c0caf5,bg:-1,hl:#bb9af7
   --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff
   --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff

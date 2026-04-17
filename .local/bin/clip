@@ -54,21 +54,22 @@ done
 selected=$(
     cliphist list \
     | fzf \
-        --prompt="  clip > " \
-        --header="Clipboard history  ·  del to remove entry" \
+        --prompt="clip > " --pointer="▶" --marker="✓" \
         --bind="del:execute(echo {} | cliphist delete)+reload(cliphist list)" \
         --with-nth=2.. \
-        --preview='echo {} | cliphist decode' \
+        --preview='echo {} | cliphist decode 2>/dev/null | cat -v | head -50' \
         --preview-window=right:50%:wrap \
         --preview-label=" Preview " \
         --border-label=" Clipboard History " \
         --no-info \
         --border=rounded \
-        --height=100%
+        --height=100% \
+        --color=fg:#c0caf5,bg:-1,hl:#bb9af7 \
+        --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff \
+        --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff \
 ) || exit 0
-
 
 # ==== COPY ====
 
 [[ -z "$selected" ]] && exit 0
-echo "$selected" | cliphist decode | wl-copy
+echo "$selected" | cliphist decode | wl-copy &
