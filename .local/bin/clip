@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# ~/.local/bin/clip
+# Author: shalom2552
+# Date:   2026-04-17
+#
+# Fuzzy clipboard history picker powered by cliphist + fzf.
+# Selecting an entry decodes it and writes it to the clipboard.
+#
+# Usage: clip [-h|--help]
+#
+# Dependencies: cliphist, wl-copy (wl-clipboard), fzf
+# Daemon required: wl-paste --type text --watch cliphist store
+
+set -uo pipefail
+
+
+# ==== ARGS ====
+
+usage() {
+    cat <<EOF
+Usage: clip
+
+Fuzzy clipboard history picker.
+
+Presents clipboard history via fzf. Selected entry is decoded
+and written back to the clipboard via wl-copy.
+
+Keybinds inside picker:
+  enter   Copy selected entry to clipboard
+  del     Delete selected entry from history
+
+Dependencies:
+  cliphist   — clipboard history manager
+  wl-copy    — Wayland clipboard writer (wl-clipboard)
+  fzf        — fuzzy finder
+
+The cliphist daemon must be running to populate history:
+  wl-paste --type text --watch cliphist store
+EOF
+}
+
+for arg in "$@"; do
+    case "$arg" in
+        -h|--help) usage; exit 0 ;;
+        *) echo "Unknown option: $arg" >&2; usage >&2; exit 1 ;;
+    esac
+done
+
+
+# ==== PICK ====
+
+# cliphist list format: "<id>\t<content>"
+# --with-nth=2.. hides the numeric ID from display while keeping it for decode
+selected=$(
+    cliphist list \
+    | fzf \
+        --prompt="  clip > " \
+        --header="Clipboard history  ·  del to remove entry" \
+        --bind="del:execute(echo {} | cliphist delete)+reload(cliphist list)" \
+        --with-nth=2.. \
+        --preview='echo {} | cliphist decode' \
+        --preview-window=right:50%:wrap \
+        --preview-label=" Preview " \
+        --border-label=" Clipboard History " \
+        --no-info \
+        --border=rounded \
+        --height=100%
+) || exit 0
+
+
+# ==== COPY ====
+
+[[ -z "$selected" ]] && exit 0
+echo "$selected" | cliphist decode | wl-copy

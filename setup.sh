@@ -57,7 +57,7 @@ install_arch() {
     sudo pacman -S --needed --noconfirm \
         git zsh stow curl wget unzip \
         fd bat eza btop ripgrep zoxide \
-        tmux fzf yazi fastfetch lazygit \
+        tmux fzf yazi fastfetch lazygit cliphist \
         kitty neovim chromium \
         imagemagick ffmpeg \
         python jq duf procs
@@ -70,7 +70,7 @@ install_debian() {
         git zsh stow curl wget unzip gnupg \
         software-properties-common locales libfuse2 \
         fd-find bat btop ripgrep \
-        tmux fzf kitty chromium \
+        tmux fzf kitty chromium cliphist \
         imagemagick ffmpeg fontconfig \
         python3 jq duf procs \
         libgtk-3-bin \
