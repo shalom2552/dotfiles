@@ -66,13 +66,13 @@ install_arch() {
 install_debian() {
     info "Installing packages (apt)..."
     sudo apt update
-    sudo apt install -y \
+    sudo apt install -y --ignore-missing \
         git zsh stow curl wget unzip gnupg \
         software-properties-common locales libfuse2 \
         fd-find bat btop ripgrep \
         tmux fzf kitty chromium cliphist \
         imagemagick ffmpeg fontconfig \
-        python3 jq duf procs \
+        python3 jq \
         libgtk-3-bin \
 
     # Generate locales
@@ -153,6 +153,24 @@ install_debian_extras() {
         tar xf "$TMP_DIR/lazygit.tar.gz" -C "$TMP_DIR" lazygit
         sudo mv "$TMP_DIR/lazygit" /usr/local/bin/
     fi
+
+    # procs
+    if ! command -v procs &>/dev/null; then
+        info "Installing procs..."
+        curl -fsSL https://github.com/dalance/procs/releases/latest/download/procs-v$(curl -sS https://api.github.com/repos/dalance/procs/releases/latest | jq -r '.tag_name' | sed 's/^v//')-x86_64-linux.zip -o "$TMP_DIR/procs.zip"
+        unzip -o "$TMP_DIR/procs.zip" -d "$TMP_DIR"
+        sudo mv "$TMP_DIR/procs" /usr/local/bin/
+    fi
+
+    if ! command -v duf &>/dev/null; then
+        info "Installing duf..."
+        DUF_VERSION=$(curl -sS https://api.github.com/repos/muesli/duf/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+        curl -fLo "$TMP_DIR/duf.tar.gz" \
+            "https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_x86_64.tar.gz"
+        tar xf "$TMP_DIR/duf.tar.gz" -C "$TMP_DIR" duf
+        sudo mv "$TMP_DIR/duf" /usr/local/bin/
+    fi
+
 }
 
 if [ "$DISTRO" = "arch" ]; then
