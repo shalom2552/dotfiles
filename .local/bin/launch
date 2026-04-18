@@ -97,10 +97,11 @@ if cache_is_stale; then
                 grep -q "^NoDisplay=true" "$file" && continue
                 grep -q "^Hidden=true"    "$file" && continue
 
-                name=$(grep "^Name=" "$file" | head -1 | cut -d= -f2-)
+                name=$(grep -m1 "^Name=" "$file" | cut -d= -f2- | tr -d '\t')
+                comment=$(grep -m1 "^Comment=" "$file" | cut -d= -f2- | tr -d '\t' || true)
                 [[ -n "$name" ]] || continue
 
-                printf '%s\t%s\n' "$name" "$file"
+                printf '%s\t%s\t%s\n' "$name" "${comment:-}" "$file"
             done < <(find "$app_dir" -name "*.desktop" -print0 2>/dev/null)
         done
     } | sort -u -t$'\t' -k1,1 > "$CACHE_FILE"
@@ -109,16 +110,19 @@ fi
 
 # ==== PICK ====
 
-selected=$(
-    awk -F'\t' '{print $1}' "$CACHE_FILE" \
-    | fzf \
-        --prompt="launch > " --pointer="▶" --marker="✓" \
+selected_line=$(
+    fzf --delimiter=$'\t' \
+        --nth=1 \
+        --with-nth=1 \
+        --prompt="launch > " \
+        --pointer="▶" \
+        --marker="✓" \
         --query="$QUERY" \
         --select-1 \
         --border-label=" Application Launcher " \
         --border-label-pos=center \
         --bind="ctrl-r:execute(rm -f '$CACHE_FILE')+abort" \
-        --preview="grep -m1 '^Comment=' \$(awk -F'\t' -v name={} '\$1 == name {print \$2}' '$CACHE_FILE') | cut -d= -f2- || echo 'No description'" \
+        --preview="echo {2} | awk '{if (\$0 == \"\") print \"No description available\"; else print \$0}'" \
         --preview-window="top:1:wrap:noinfo" \
         --no-info \
         --border=rounded \
@@ -126,12 +130,13 @@ selected=$(
         --color=fg:#c0caf5,bg:-1,hl:#bb9af7 \
         --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff \
         --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff \
+    < "$CACHE_FILE"
 ) || exit 0
 
 
 # ==== LAUNCH ====
 
-desktop_file=$(awk -F'\t' -v name="$selected" '$1 == name { print $2; exit }' "$CACHE_FILE")
+desktop_file=$(printf "%s" "$selected_line" | cut -f3)
 app_id="$(basename "$desktop_file" .desktop)"
 
 is_terminal_app=no
