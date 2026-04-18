@@ -269,7 +269,8 @@ info "Symlinking configs with Stow..."
 # Skip backup if stow was already run (symlinks already exist)
 if [ -L "$HOME/.zshrc" ] && [ "$(readlink "$HOME/.zshrc")" = "dotfiles/.zshrc" ]; then
     info "Stow already configured, re-stowing..."
-    stow -R .
+    stow --adopt -R .
+    git checkout .
 else
     # Back up any existing files that would conflict
     backup_needed=false
@@ -299,7 +300,8 @@ else
     fi
 
     # Stow all files
-    stow .
+    stow --adopt .
+    git checkout .
 fi
 
 info "All configs symlinked!"

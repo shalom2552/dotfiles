@@ -69,7 +69,8 @@ done
 # ---------------------------------------------------
 info "Restowing..."
 cd "$DOTFILES_DIR"
-stow -R .
+stow --adopt -R .
+git checkout . # If --adopt changed files we want to keep, we can revert the 'adoption' changes
 
 # Verify symlinks
 for REL_PATH in "${TRACKED[@]}"; do
