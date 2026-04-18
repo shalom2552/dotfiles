@@ -53,6 +53,9 @@ if [ -d "$FNM_PATH" ]; then
   eval "$(fnm env --use-on-cd)"
 fi
 
+# Colorize man pages
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 
 # =============================================================================
 # 4. TOOL CONFIGURATIONS
@@ -141,3 +144,4 @@ fi
 if [ -f ~/.localconf ]; then
     source ~/.localconf
 fi
+
