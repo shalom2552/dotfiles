@@ -33,10 +33,10 @@ My Neovim config is included as a git submodule at `.config/nvim/`. It's a custo
 * **Standalone repo:** [github.com/shalom2552/nvim](https://github.com/shalom2552/nvim)
 * **Start Fresh:** If you prefer to build your own, check out the [LazyVim Starter Documentation](https://www.lazyvim.org/).
 
-## Quick Install
+## Quick Install (Recommended)
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/shalom2552/dotfiles/main/install.sh)
+bash <(curl -fSsL shalom2552.github.io/dotfiles/install.sh)
 ```
 
 > `install.sh` installs `git`, clones the repo, and runs `setup.sh` to handle dependencies, shell configuration, and Stow symlinks.
