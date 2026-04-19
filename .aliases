@@ -1,34 +1,52 @@
 #!/usr/bin/env zsh
+# ~/.aliases
+
+# =============================================================================
+# ENVIRONMENT
+# =============================================================================
+_EZA_COMMON="--icons --group-directories-first --git"
+_FZF_PREVIEW_CMD='bat --style=numbers --color=always --line-range :500 "{}"'
+_FD_COMMON="--hidden --exclude .local --exclude .npm --exclude .cargo"
+
+# =============================================================================
+# ALIASES
+# =============================================================================
 
 # Core
-alias shortcuts='bat ~/.aliases --color=always --style=plain | grep "alias" | sed s/alias// | fzf --ansi --border-label=" Aliases "'
-alias shtcts='shortcuts'
 alias v='nvim'
 alias fm='yazi'
 alias q='exit'
+alias n='xdg-open . 2>/dev/null'
+alias zz='cdi'
 
 # Replacements
-alias ls='eza -G --icons --group-directories-first --git --header'
-alias la='eza -a --icons --group-directories-first --git --header'
-alias ll='eza -l --icons --group-directories-first --git --header'
-alias lsa='eza -al --icons --group-directories-first --git --header'
-alias tree='eza -T --icons --git'
-alias zz='cdi'
+alias ls="eza -G $_EZA_COMMON"
+alias la="eza -a $_EZA_COMMON"
+alias ll="eza -l --header $_EZA_COMMON"
+alias lsa="eza -al --header $_EZA_COMMON"
+alias tree="eza -T --icons --git"
 alias df='duf'
 alias ps='procs'
 
-# Utilities
-alias todo='grep -rnw --color=auto TODO'
+# Fuzzy tools
+alias vf='ff | xargs -r ${EDITOR:-nvim}'
+alias bf='ff | xargs -r bat'
+alias cf='ff | xargs -r cat'
+alias wf='ff | xargs -r wc -l'
+
+# System
+alias vol='amixer set Master'
+alias lock='xdg-screensaver lock'
 alias matrix='unimatrix -ab -c green -s 96'
 
 # Git
 alias ga='git add'
+alias gap='git add --patch'
+alias gau='git add --update'
+alias gaa='git add --all --verbose'
 alias gp='git push'
 alias gpl='git pull'
 alias gpf='git push --force'
-alias gaa='git add --all --verbose'
-alias gap='git add --patch'
-alias gau='git add --update'
 alias gst='git status -u'
 alias gdf='git diff'
 alias gcm='git commit -m'
@@ -37,12 +55,54 @@ alias gsw='git switch'
 alias lgt='lazygit'
 
 # Tmux
-alias tdev='tmux-dev'
 alias ta='tmux attach -t'
 alias tls='tmux ls'
 alias tk='tmux kill-session -t'
+alias tdev='tmux-dev'
 
-# System
-alias vol='amixer set Master'
-alias n='xdg-open . 2>/dev/null'
-alias lock='xdg-screensaver lock'
+# =============================================================================
+# FUNCTIONS
+# =============================================================================
+
+# Fuzzy file finder
+ff() {
+  fd --type f ${=_FD_COMMON} | fzf --multi --preview=$_FZF_PREVIEW_CMD
+}
+
+# Fuzzy directory changer
+cdf() {
+  local dir
+  dir=$(fd --type d ${=_FD_COMMON} | fzf --preview='eza -T --icons --git --color=always "{}" | head -200')
+  [[ -n "$dir" ]] && cd "$dir"
+}
+
+# Fuzzy process killer
+fk() {
+  command ps aux --no-heading | \
+    fzf --multi \
+      --header="Select processes to kill" \
+      --preview '
+        echo "PID:        {2}"
+        echo "USER:       {1}"
+        echo "CPU:        {3}%"
+        echo "MEM:        {4}%"
+        echo "TTY:        {7}"
+        echo "TIME:       {10}"
+        echo ""
+        echo "Command:"
+        echo "{11..}"
+      ' \
+      --preview-window="right:50%:wrap" \
+      --bind="enter:execute-silent:awk '\''{print \$2}'\'' <<< {} | xargs -r kill" \
+      --bind="ctrl-k:execute-silent:awk '\''{print \$2}'\'' <<< {} | xargs -r kill -9" \
+      --ansi
+}
+
+# Search for TODOs
+todo() {
+  grep -rnw --color=auto "${1:-.}" -e "TODO"
+}
+
+# View all shortcuts
+alias shortcuts='bat ~/.aliases --color=always --style=plain | grep "alias" | fzf --ansi --border-label=" Aliases "'
+alias sc='shortcuts'

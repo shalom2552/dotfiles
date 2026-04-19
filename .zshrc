@@ -101,23 +101,7 @@ kitty-opacity() {
 
 
 # =============================================================================
-# 5. FUNCTIONS
-# =============================================================================
-# Visual find and open in editor
-vf() {
-  local out
-  out=$(fd --type f --hidden ${=FD_EXCLUDES} \
-    --exclude .local --exclude .npm --exclude .cargo \
-    --exclude .mozilla --exclude .rustup |
-    fzf --multi --preview='bat --style=numbers --color=always --line-range :500 {}' \
-        --bind='?:toggle-preview,ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down')
-
-  [[ -n "$out" ]] && ${EDITOR:-nvim} "${(f)out}"
-}
-
-
-# =============================================================================
-# 6. HOOKS
+# 5. HOOKS
 # =============================================================================
 # pwd and ls on cd
 chpwd() {
@@ -131,7 +115,7 @@ add-zsh-hook precmd () { print -Pn "\e]0;%~\a" }
 
 
 # =============================================================================
-# 7. ALIASES
+# 6. ALIASES
 # =============================================================================
 if [ -f ~/.aliases ]; then
     source ~/.aliases
