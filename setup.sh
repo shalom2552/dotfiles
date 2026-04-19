@@ -39,15 +39,17 @@ detect_distro() {
     info "Detected distro: $DISTRO"
 }
 
+detect_distro
 # ---------------------------------------------------
-# 1. Check we're in the right place
+# 1. Check git repo exist and update
 # ---------------------------------------------------
 if [ ! -d "$DOTFILES_DIR/.git" ]; then
     error "Expected dotfiles repo at $DOTFILES_DIR. Clone it first:\n  git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git ~/dotfiles"
 fi
 
 cd "$DOTFILES_DIR"
-detect_distro
+info "Pulling latest hyprconf..."
+git pull --rebase || error "Pulling failed."
 
 # ---------------------------------------------------
 # 2. Install system packages

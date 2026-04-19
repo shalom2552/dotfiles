@@ -2,7 +2,7 @@
 set -e
 
 DOTFILES_DIR="$HOME/dotfiles"
-VERSION="2.4.1"
+VERSION="2.4.3"
 
 # ---------------------------------------------------
 # Helpers
@@ -62,18 +62,6 @@ if [[ "$confirm" =~ ^[Nn]$ ]]; then
 fi
 
 # ---------------------------------------------------
-# Pre-install checks
-# ---------------------------------------------------
-if [ -d "$DOTFILES_DIR" ]; then
-    warn "~/dotfiles already exists. Skipping clone."
-    info "To run setup manually:"
-    echo ""
-    echo "    cd ~/dotfiles && chmod +x setup.sh && ./setup.sh"
-    echo ""
-    exit 1
-fi
-
-# ---------------------------------------------------
 # Install prerequisites
 # ---------------------------------------------------
 info "Starting installation..."
@@ -93,10 +81,20 @@ fi
 # ---------------------------------------------------
 # Clone and run setup.sh
 # ---------------------------------------------------
-info "Cloning dotfiles repository..."
-git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git "$DOTFILES_DIR"
-cd "$DOTFILES_DIR"
+if [ -d "$DOTFILES_DIR/.git" ]; then
+    warn "~/dotfiles already exists. Pulling latest..."
+    cd "$DOTFILES_DIR"
+    git pull --rebase || error "Pull failed."
+else
+    if [ -d "$DOTFILES_DIR" ]; then
+        warn "~/dotfiles exists. Backing up to ~/dotfiles.bak..."
+        mv "$DOTFILES_DIR" "$HOME/dotfiles.bak"
+    fi
+    info "Cloning dotfiles repository..."
+    git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git "$DOTFILES_DIR"
+fi
 
+cd "$DOTFILES_DIR"
 info "Handing off to setup.sh..."
 chmod +x setup.sh
 exec ./setup.sh
