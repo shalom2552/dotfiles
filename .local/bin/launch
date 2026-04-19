@@ -99,9 +99,22 @@ if cache_is_stale; then
 
                 name=$(grep -m1 "^Name=" "$file" | cut -d= -f2- | tr -d '\t')
                 comment=$(grep -m1 "^Comment=" "$file" | cut -d= -f2- | tr -d '\t' || true)
+                icon_name=$(grep -m1 "^Icon=" "$file" | cut -d= -f2- | tr -d '\t' || true)
                 [[ -n "$name" ]] || continue
 
-                printf '%s\t%s\t%s\n' "$name" "${comment:-}" "$file"
+                # Resolve icon path
+                icon_path=""
+                if [[ -n "$icon_name" ]]; then
+                    if [[ "$icon_name" == /* ]]; then
+                        icon_path="$icon_name"
+                    else
+                        # Search common icon locations (prioritize 48x48 apps or pixmaps)
+                        icon_path=$(find /usr/share/icons/hicolor/48x48/apps /usr/share/pixmaps /usr/share/icons/hicolor/scalable/apps -name "$icon_name.*" -print -quit 2>/dev/null | head -n 1)
+                    fi
+                fi
+
+                # Color the name (Tokyo Night Green: #9ece6a)
+                printf '\x1b[38;2;158;206;106m%s\x1b[0m\t%s\t%s\t%s\n' "$name" "${comment:-}" "$file" "${icon_path:-}"
             done < <(find "$app_dir" -name "*.desktop" -print0 2>/dev/null)
         done
     } | sort -u -t$'\t' -k1,1 > "$CACHE_FILE"
@@ -110,8 +123,20 @@ fi
 
 # ==== PICK ====
 
+# Helper script for preview to show both icon and description
+PREVIEW_CMD='
+    icon={4}
+    desc={2}
+if [ -n "$desc" ]; then
+        echo "$desc"
+    else
+        echo "No description available"
+    fi
+'
+
 selected_line=$(
-    fzf --delimiter=$'\t' \
+    fzf --ansi \
+        --delimiter=$'\t' \
         --nth=1 \
         --with-nth=1 \
         --prompt="launch > " \
@@ -122,7 +147,7 @@ selected_line=$(
         --border-label=" Application Launcher " \
         --border-label-pos=center \
         --bind="ctrl-r:execute(rm -f '$CACHE_FILE')+abort" \
-        --preview="echo {2} | awk '{if (\$0 == \"\") print \"No description available\"; else print \$0}'" \
+        --preview="$PREVIEW_CMD" \
         --preview-window="top:1:wrap:noinfo" \
         --no-info \
         --border=rounded \

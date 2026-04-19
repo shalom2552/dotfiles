@@ -80,10 +80,10 @@ selected=$(list_actions | fzf \
     --with-nth=1 \
     --query="$QUERY" \
     --select-1 \
-    --prompt="power > " \
+    --prompt="> " \
     --pointer="▶" \
     --marker="✓" \
-    --border-label=" System Actions " \
+    --border-label=" System " \
     --no-info \
     --border=rounded \
     --height=100% \
