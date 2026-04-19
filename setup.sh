@@ -54,26 +54,48 @@ detect_distro
 # ---------------------------------------------------
 install_arch() {
     info "Installing packages (pacman)..."
-    sudo pacman -S --needed --noconfirm \
-        git zsh stow curl wget unzip \
-        fd bat eza btop ripgrep zoxide \
-        tmux fzf yazi fastfetch lazygit cliphist \
-        kitty neovim chromium \
-        imagemagick ffmpeg \
-        python jq duf procs
+
+    packages=(
+        git zsh stow curl wget unzip
+        fd bat eza btop ripgrep zoxide
+        tmux fzf yazi fastfetch lazygit cliphist
+        kitty neovim chromium
+        imagemagick ffmpeg
+        python jq duf
+    )
+
+    for pkg in "${packages[@]}"; do
+        if ! pacman -Q "$pkg" &>/dev/null; then
+            info "Installing $pkg..."
+            sudo pacman -S --needed --noconfirm "$pkg" || warn "Failed to install $pkg, skipping..."
+        else
+            info "$pkg already installed, skipping."
+        fi
+    done
 }
 
 install_debian() {
     info "Installing packages (apt)..."
     sudo apt update
-    sudo apt install -y --ignore-missing \
-        git zsh stow curl wget unzip gnupg \
-        software-properties-common locales libfuse2 \
-        fd-find bat btop ripgrep \
-        tmux fzf kitty chromium cliphist \
-        imagemagick ffmpeg fontconfig \
-        python3 jq \
-        libgtk-3-bin \
+
+    packages=(
+        git zsh stow curl wget unzip gnupg
+        software-properties-common locales libfuse2
+        fd-find bat btop ripgrep
+        tmux fzf kitty chromium cliphist
+        imagemagick ffmpeg fontconfig
+        python3 jq
+        libgtk-3-bin
+    )
+
+    for pkg in "${packages[@]}"; do
+        if ! dpkg -l "$pkg" &>/dev/null; then
+            info "Installing $pkg..."
+            sudo apt install -y "$pkg" || warn "Failed to install $pkg, skipping..."
+        else
+            info "$pkg already installed, skipping."
+        fi
+    done
 
     # Generate locales
     if ! locale -a 2>/dev/null | grep -qi "en_US.utf8\|en_US.UTF-8"; then
@@ -152,14 +174,6 @@ install_debian_extras() {
             "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
         tar xf "$TMP_DIR/lazygit.tar.gz" -C "$TMP_DIR" lazygit
         sudo mv "$TMP_DIR/lazygit" /usr/local/bin/
-    fi
-
-    # procs
-    if ! command -v procs &>/dev/null; then
-        info "Installing procs..."
-        curl -fsSL https://github.com/dalance/procs/releases/latest/download/procs-v$(curl -sS https://api.github.com/repos/dalance/procs/releases/latest | jq -r '.tag_name' | sed 's/^v//')-x86_64-linux.zip -o "$TMP_DIR/procs.zip"
-        unzip -o "$TMP_DIR/procs.zip" -d "$TMP_DIR"
-        sudo mv "$TMP_DIR/procs" /usr/local/bin/
     fi
 
     if ! command -v duf &>/dev/null; then
