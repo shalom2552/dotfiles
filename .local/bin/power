@@ -5,7 +5,7 @@
 #
 # Unified power menu powered by fzf.
 #
-# Usage: power [options]
+# Usage: power [options] [query]
 #
 # Options:
 #   -p, --print   Print the command instead of executing it.
@@ -27,30 +27,35 @@ C_RESET='\x1b[0m'
 
 usage() {
     cat <<EOF
-Usage: power [options]
+Usage: power [options] [query]
 
 Fuzzy system power menu.
 
 Options:
   -p, --print     Print the selected command instead of executing.
   -h, --help      Show this help message.
+
+Arguments:
+  query           (Optional) Initial search string. If only one match
+                  exists, it is selected automatically.
 EOF
 }
 
 PRINT_MODE=false
+QUERY=""
 
 for arg in "$@"; do
     case "$arg" in
         -p|--print) PRINT_MODE=true ;;
         -h|--help)  usage; exit 0 ;;
-        *) echo "Unknown option: $arg" >&2; usage >&2; exit 1 ;;
+        -*) echo "Unknown option: $arg" >&2; usage >&2; exit 1 ;;
+        *)  [[ -z "$QUERY" ]] && QUERY="$arg" ;;
     esac
 done
 
 # ==== ACTIONS ====
 
 # Format: "Icon|Color|Label|Command"
-# Using | as internal separator for the array, converted to tab for fzf
 # Symbols: 󰌾 Lock, 󰗼 Logout, 󰖔 Suspend, 󰜉 Reboot, 󰐥 Shutdown
 ACTIONS=(
     "󰌾|${C_BLUE}|Lock|loginctl lock-session || hyprlock"
@@ -62,8 +67,6 @@ ACTIONS=(
 
 # ==== PICK ====
 
-# Generate the list: Icon (colored) + Label [TAB] Command
-# Icons are padded for perfect alignment
 list_actions() {
     for entry in "${ACTIONS[@]}"; do
         IFS='|' read -r icon color label cmd <<< "$entry"
@@ -75,6 +78,8 @@ selected=$(list_actions | fzf \
     --ansi \
     --delimiter=$'\t' \
     --with-nth=1 \
+    --query="$QUERY" \
+    --select-1 \
     --prompt="power > " \
     --pointer="▶" \
     --marker="✓" \
@@ -95,7 +100,6 @@ if [[ -n "$cmd" ]]; then
     if [[ "$PRINT_MODE" == true ]]; then
         echo "$cmd"
     else
-        # Use bash -c for safe execution of complex commands/pipes
         bash -c "$cmd"
     fi
 fi
