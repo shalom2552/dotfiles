@@ -68,8 +68,6 @@ alias tls='tmux ls'
 alias tk='tmux kill-session -t'
 alias tdev='tmux-dev'
 
-alias todo='grep -rnw --color=auto "${1:-.}" -e "TODO"'
-
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
