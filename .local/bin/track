@@ -69,7 +69,7 @@ done
 # ---------------------------------------------------
 info "Restowing..."
 cd "$DOTFILES_DIR"
-stow --adopt -R .
+stow --adopt -R --no-folding .
 git checkout . # If --adopt changed files we want to keep, we can revert the 'adoption' changes
 
 # Verify symlinks
