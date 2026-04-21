@@ -5,8 +5,8 @@
 # ENVIRONMENT
 # =============================================================================
 _EZA_COMMON="--icons --group-directories-first --git"
-_FD_COMMON="--hidden --exclude .local --exclude .npm --exclude .cargo"
-_FZF_THEME="--color=fg:#c0caf5,bg:-1,hl:#bb9af7 --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff"
+_FD_COMMON="--hidden --exclude .npm --exclude .bun --exclude .vscode --exclude .rustup --exclude .cache"
+_FZF_THEME="--color=fg:#c0caf5,bg:-1,hl:#bb9af7,border:#7f7f7f --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff"
 _FZF_LAYOUT="--pointer=▶ --border=rounded --border-label-pos=center --height=100%"
 _FZF_KEYBINDS="--bind=ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up,ctrl-/:toggle-preview,ctrl-a:select-all,ctrl-space:toggle,alt-d:deselect-all"
 _FZF_FILE_PREVIEW='bat --style=numbers --color=always --line-range :500 {}'
@@ -74,11 +74,11 @@ alias tdev='tmux-dev'
 
 # Fuzzy file finder
 ff() {
-    fd --type f ${=_FD_FLAGS} "${1:-.}" | fzf --multi \
+    fd --type f ${=_FD_COMMON} "${2:-.}" | fzf --multi \
         ${=_FZF_LAYOUT} \
         --border-label=" Files " \
         --preview=$_FZF_FILE_PREVIEW \
-        --preview-window=right:50%:wrap \
+        --preview-window=right:70%:wrap \
         ${=_FZF_KEYBINDS} \
         ${=_FZF_THEME}
 }

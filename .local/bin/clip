@@ -70,6 +70,5 @@ selected=$(
 ) || exit 0
 
 # ==== COPY ====
-
 [[ -z "$selected" ]] && exit 0
-echo "$selected" | cliphist decode | wl-copy &
+echo "$selected" | cliphist decode | wl-copy
