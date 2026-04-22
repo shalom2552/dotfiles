@@ -112,7 +112,7 @@ fdiff() {
 
 # Fuzzy process killer
 kf() {
-  command ps aux --no-heading \
+  command ps aux --no-header \
     | sed -E 's/ +/ /g' \
     | fzf --multi \
         --prompt="proc > " \
@@ -131,7 +131,7 @@ kf() {
         ' \
         --preview-window="right:50%:wrap" \
         --bind="space:toggle" \
-        --bind="ctrl-k:execute-silent(echo {+2} | xargs -r kill -9)+reload(ps aux --no-heading | sed -E 's/ +/ /g')" \
+        --bind="ctrl-k:execute-silent(echo {+2} | xargs -r kill -9)+reload(command ps aux --no-header | sed -E 's/ +/ /g')" \
         ${=_FZF_LAYOUT} \
         ${=_FZF_KEYBINDS} \
         ${=_FZF_THEME} \
