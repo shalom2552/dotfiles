@@ -54,6 +54,7 @@ if [ -d "$FNM_PATH" ]; then
 fi
 
 # Colorize man pages
+export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 
