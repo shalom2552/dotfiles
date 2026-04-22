@@ -33,6 +33,8 @@ source $ZSH/oh-my-zsh.sh
 # =============================================================================
 export EDITOR=nvim
 export VISUAL=nvim
+export XDG_TERMINAL_EXEC="kitty"
+export TERMINAL="kitty"
 
 # History
 export HISTFILE="$HOME/.zsh_history"
