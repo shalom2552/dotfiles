@@ -55,15 +55,33 @@ done
 
 # ==== ACTIONS ====
 
+LOCK="Lock"
+LOGOUT="Logout"
+SUSPEND="Suspend"
+REBOOT="Reboot"
+SHUTDOWN="Shutdown"
+
 # Format: "Icon|Color|Label|Command"
 # Symbols: 󰌾 Lock, 󰗼 Logout, 󰖔 Suspend, 󰜉 Reboot, 󰐥 Shutdown
 ACTIONS=(
-    "󰌾|${C_BLUE}|Lock|loginctl lock-session || hyprlock"
-    "󰗼|${C_YELLOW}|Logout|loginctl terminate-user \"$USER\""
-    "󰖔|${C_PURPLE}|Suspend|systemctl suspend"
-    "󰜉|${C_ORANGE}|Reboot|systemctl reboot"
-    "󰐥|${C_RED}|Shutdown|systemctl poweroff"
+    "󰌾|${C_BLUE}|${LOCK}|loginctl lock-session || hyprlock"
+    "󰗼|${C_YELLOW}|${LOGOUT}|loginctl terminate-user \"$USER\""
+    "󰖔|${C_PURPLE}|${SUSPEND}|systemctl suspend"
+    "󰜉|${C_ORANGE}|${REBOOT}|systemctl reboot"
+    "󰐥|${C_RED}|${SHUTDOWN}|systemctl poweroff"
 )
+
+# ==== HELPERS ====
+
+confirm() {
+    printf '\n  %b%s%b\n  %b❯%b %s now? %b[Y/n]%b ' \
+        "$C_RED" "──────────────────" "$C_RESET" \
+        "$C_YELLOW" "$C_RESET" \
+        "$1" \
+        "$C_BLUE" "$C_RESET" >/dev/tty
+    read -r reply </dev/tty
+    [[ "${reply,,}" != "n" ]]
+}
 
 # ==== PICK ====
 
@@ -94,12 +112,23 @@ selected=$(list_actions | fzf \
 
 # ==== EXECUTE ====
 
+CONFIRM_LABELS=("$LOGOUT" "$REBOOT" "$SHUTDOWN" "$LOCK")
+
+label=$(echo "$selected" | cut -f1 | sed 's/^[^ ]* *//')
 cmd=$(echo "$selected" | cut -f2-)
+
+needs_confirm=false
+for cl in "${CONFIRM_LABELS[@]}"; do
+    [[ "$label" == *"$cl"* ]] && needs_confirm=true && break
+done
 
 if [[ -n "$cmd" ]]; then
     if [[ "$PRINT_MODE" == true ]]; then
         echo "$cmd"
     else
+        if [[ "$needs_confirm" == true ]]; then
+            confirm "$cl" || exit 0
+        fi
         bash -c "$cmd"
     fi
 fi
