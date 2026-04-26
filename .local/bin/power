@@ -102,10 +102,11 @@ selected=$(list_actions | fzf \
     --prompt="> " \
     --pointer="▶" \
     --marker="✓" \
+    --margin=20%,30% \
     --border-label=" System " \
     --no-info \
     --border=rounded \
-    --height=100% \
+    --height=10% \
     --color=fg:#c0caf5,bg:-1,hl:#bb9af7 \
     --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff \
     --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff \
