@@ -19,14 +19,6 @@ tmux split-window -h -t $SESSION:2 -c "$DIR"
 tmux new-window -t $SESSION -n "Git" -c "$DIR"
 tmux send-keys -t $SESSION:3 "lazygit" C-m
 
-# Window 4: Yazi
-tmux new-window -t $SESSION -n "Yazi" -c "$DIR"
-tmux send-keys -t $SESSION:4 "yazi" C-m
-
-# Window 5: Monitor
-tmux new-window -t $SESSION -n "Monitor" -c "$DIR"
-tmux send-keys -t $SESSION:5 "btop" C-m
-
 # Focus on editor
 tmux select-window -t $SESSION:1
 
