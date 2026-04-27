@@ -67,12 +67,12 @@ Install the core utilities:
 ```bash
 sudo pacman -S --needed \
   fd bat eza btop ripgrep unzip zoxide \
-  tmux fzf yazi fastfetch lazygit \
+  tmux fzf yazi fastfetch lazygit cliphist \
   kitty chromium imagemagick ffmpeg \
-  python jq stow duf procs
+  python jq stow duf
 
 # Debian/Ubuntu: some packages have different names (fd-find, python3).
-# (eza, yazi, zoxide, fastfetch, lazygit) are not in default repos.
+# (eza, yazi, zoxide, fastfetch, lazygit, duf) are not in default repos.
 ```
 
 #### 2. Shell Environment (Oh My Zsh + Plugins)
@@ -126,7 +126,8 @@ fc-cache -fv
 
 ```bash
 cd ~/dotfiles
-stow .
+stow --adopt --no-folding .
+git checkout .
 ```
 
 This creates symlinks from `~/dotfiles/` into your home directory for all tracked configs.
@@ -166,7 +167,8 @@ To re-apply symlinks after adding new files:
 
 ```bash
 cd ~/dotfiles
-stow .
+stow --adopt --no-folding .
+git checkout .
 ```
 
 ## Troubleshooting
@@ -183,7 +185,8 @@ If `stow` reports conflicts, it means existing files are in the way. Back them u
 # Back up conflicting file
 mv ~/.config/kitty/kitty.conf ~/.config/kitty/kitty.conf.bak
 
-# Or use --adopt to pull existing files into the repo
+# Or use --adopt to pull existing files into the repo, then restore dotfiles versions
 cd ~/dotfiles
-stow --adopt .
+stow --adopt --no-folding .
+git checkout .
 ```
