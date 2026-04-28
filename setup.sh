@@ -100,8 +100,12 @@ install_debian() {
     done
 
     # Generate locales
-    if ! locale -a 2>/dev/null | grep -qi "en_US.utf8\|en_US.UTF-8"; then
-        sudo locale-gen en_US.UTF-8
+    if command -v locale-gen &>/dev/null; then
+        if ! locale -a 2>/dev/null | grep -qi "en_US.utf8\|en_US.UTF-8"; then
+            sudo locale-gen en_US.UTF-8
+        fi
+    else
+        warn "locale-gen not found, skipping locale generation"
     fi
 
     # fd-find and bat install with different binary names on Debian/Ubuntu
