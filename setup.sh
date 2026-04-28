@@ -246,11 +246,16 @@ TPM_DIR="$HOME/.config/tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
     info "Installing TPM (Tmux Plugin Manager)..."
     git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
-    info "Installing tmux plugins..."
-    tmux new-session -d -s _setup \
-        "sleep 3 \
-        && ~/.config/tmux/plugins/tpm/bin/install_plugins \
-        && tmux kill-session -t _setup"
+
+    if command -v tmux &>/dev/null; then
+        info "Installing tmux plugins..."
+        tmux new-session -d -s _setup \
+            "sleep 3 \
+            && ~/.config/tmux/plugins/tpm/bin/install_plugins \
+            && tmux kill-session -t _setup" || warn "tmux plugin install failed, run manually: <prefix>+I"
+    else
+        warn "tmux not found in PATH, skipping plugin install. Run <prefix>+I inside tmux later."
+    fi
 else
     info "TPM already installed, skipping."
 fi
