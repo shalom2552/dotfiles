@@ -77,10 +77,8 @@ fi
 # 1. Install prerequisites
 # ---------------------------------------------------
 log_info "Starting installation..."
-echo ""
-
-log_info "Installing git..."
 if ! command -v git &>/dev/null; then
+    log_info "Installing git..."
     if [ "$DISTRO" = "arch" ]; then
         sudo pacman -S --noconfirm git
     elif [ "$DISTRO" = "debian" ]; then
@@ -88,13 +86,17 @@ if ! command -v git &>/dev/null; then
     else
         log_error "Unsupported distro. Supports Arch-based and Debian/Ubuntu-based systems."
     fi
+else
+    log_info "git already installed, skipping."
 fi
 
 # ---------------------------------------------------
 # 2. Clone dotfiles
 # ---------------------------------------------------
+IS_UPDATE=false
 if [ -d "$DOTFILES_DIR/.git" ]; then
-    log_warn "~/dotfiles already exists. Pulling latest..."
+    IS_UPDATE=true
+    log_info "Updating dotfiles..."
     cd "$DOTFILES_DIR"
     git pull --rebase || log_error "Pull failed."
 else
@@ -441,7 +443,11 @@ fi
 # ---------------------------------------------------
 # Done
 # ---------------------------------------------------
-echo ""
-log_info "Setup complete!"
-log_info "Run 'exec zsh' to start your new shell, then 'p10k configure' to set up the prompt."
+if [ "$IS_UPDATE" = true ]; then
+    log_info "Update complete!"
+else
+    log_info "Setup complete!"
+    echo -e "  ${CYAN}→${NC} Run ${BOLD}${GREEN}exec zsh${NC} to start"
+    echo -e "  ${CYAN}→${NC} Run ${BOLD}${GREEN}p10k configure${NC} to change the prompt"
+fi
 echo ""
