@@ -44,6 +44,7 @@ fi
 # ---------------------------------------------------
 # 0. Welcome
 # ---------------------------------------------------
+if [ "${REEXECED:-0}" != "1" ] && [ "${SKIP_WELCOME:-0}" != "1" ]; then
 echo -e "${CYAN}"
 echo "     ███████╗██╗██╗     ███████╗███████╗"
 echo "     ██╔════╝██║██║     ██╔════╝██╔════╝"
@@ -60,17 +61,18 @@ echo -e "  Detected:      ${GREEN}$DISTRO${NC}"
 echo -e "  Est. time:     ${GREEN}~5-10 min${NC}"
 echo ""
 echo -e "  ${BOLD}── What's included ──${NC}"
-echo "    • System packages (git, zsh, nvim, tmux, ...)"
-echo "    • Oh My Zsh + Powerlevel10k + plugins"
-echo "    • fnm (Node), fonts, and CLI tools"
+echo "    • Zsh + Oh My Zsh + Powerlevel10k"
+echo "    • Neovim (LazyVim), tmux, kitty"
+echo "    • CLI tools: yazi, btop, lazygit, fzf, zoxide, pulsemixer, ..."
+echo "    • fnm (Node), JetBrainsMono Nerd Font"
 echo "    • Configs symlinked via Stow"
-echo "    • Zsh as default shell"
 echo ""
 read -r -p "  Proceed? [n/Y] " confirm
 echo ""
 if [[ "$confirm" =~ ^[Nn]$ ]]; then
     echo "  Aborted."
     exit 0
+fi
 fi
 
 # ---------------------------------------------------
@@ -94,11 +96,19 @@ fi
 # 2. Clone dotfiles
 # ---------------------------------------------------
 IS_UPDATE=false
-if [ -d "$DOTFILES_DIR/.git" ]; then
+if [ "${REEXECED:-0}" = "1" ]; then
     IS_UPDATE=true
-    log_info "Updating dotfiles..."
+elif [ -d "$DOTFILES_DIR/.git" ]; then
+    log_info "~/dotfiles already cloned, checking for updates..."
     cd "$DOTFILES_DIR"
-    git pull --rebase || log_error "Pull failed."
+    pull_out=$(git pull --rebase 2>&1) || log_error "Pull failed."
+    if echo "$pull_out" | grep -q "Already up to date\|Current branch.*is up to date"; then
+        log_info "Dotfiles already up to date."
+    else
+        log_info "Dotfiles updated."
+    fi
+    log_info "Re-launching updated script..."
+    exec env REEXECED=1 bash "$DOTFILES_DIR/install.sh"
 else
     if [ -d "$DOTFILES_DIR" ]; then
         log_warn "~/dotfiles exists. Backing up to ~/dotfiles.bak..."
@@ -374,7 +384,7 @@ log_info "Symlinking configs with Stow..."
 if [ -L "$HOME/.zshrc" ] && [ "$(readlink -f "$HOME/.zshrc")" = "$DOTFILES_DIR/.zshrc" ]; then
     log_info "Stow already configured, re-stowing..."
     stow --adopt -R --no-folding .
-    git checkout .
+    git checkout . 2>/dev/null
 else
     # Back up any existing files that would conflict
     backup_needed=false
@@ -405,7 +415,7 @@ else
 
     # Stow all files
     stow --adopt --no-folding .
-    git checkout .
+    git checkout . 2>/dev/null
 fi
 
 log_info "All configs symlinked!"
@@ -444,9 +454,9 @@ fi
 # Done
 # ---------------------------------------------------
 if [ "$IS_UPDATE" = true ]; then
-    log_info "Update complete!"
+    log_info "Dotfiles update complete!"
 else
-    log_info "Setup complete!"
+    log_info "Dotfiles setup complete!"
     echo -e "  ${CYAN}→${NC} Run ${BOLD}${GREEN}exec zsh${NC} to start"
     echo -e "  ${CYAN}→${NC} Run ${BOLD}${GREEN}p10k configure${NC} to change the prompt"
 fi
