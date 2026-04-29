@@ -19,8 +19,8 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 log_info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
-warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
-error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
+log_warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 on_error() {
     echo -e "\n${RED}[ERROR]${NC} Setup failed at line $LINENO.\n"
@@ -42,7 +42,7 @@ else
 fi
 
 # ---------------------------------------------------
-# Welcome
+# 0. Welcome
 # ---------------------------------------------------
 echo -e "${CYAN}"
 echo "     ███████╗██╗██╗     ███████╗███████╗"
@@ -74,7 +74,7 @@ if [[ "$confirm" =~ ^[Nn]$ ]]; then
 fi
 
 # ---------------------------------------------------
-# Install prerequisites
+# 1. Install prerequisites
 # ---------------------------------------------------
 log_info "Starting installation..."
 echo ""
@@ -86,20 +86,20 @@ if ! command -v git &>/dev/null; then
     elif [ "$DISTRO" = "debian" ]; then
         sudo apt update && sudo apt install -y git
     else
-        error "Unsupported distro. Supports Arch-based and Debian/Ubuntu-based systems."
+        log_error "Unsupported distro. Supports Arch-based and Debian/Ubuntu-based systems."
     fi
 fi
 
 # ---------------------------------------------------
-# Clone and run setup.sh
+# 2. Clone and run setup.sh
 # ---------------------------------------------------
 if [ -d "$DOTFILES_DIR/.git" ]; then
-    warn "~/dotfiles already exists. Pulling latest..."
+    log_warn "~/dotfiles already exists. Pulling latest..."
     cd "$DOTFILES_DIR"
-    git pull --rebase || error "Pull failed."
+    git pull --rebase || log_error "Pull failed."
 else
     if [ -d "$DOTFILES_DIR" ]; then
-        warn "~/dotfiles exists. Backing up to ~/dotfiles.bak..."
+        log_warn "~/dotfiles exists. Backing up to ~/dotfiles.bak..."
         mv "$DOTFILES_DIR" "$HOME/dotfiles.bak"
     fi
     log_info "Cloning dotfiles repository..."
@@ -109,7 +109,7 @@ fi
 cd "$DOTFILES_DIR"
 
 # ---------------------------------------------------
-# 1. Install system packages
+# 3. Install system packages
 # ---------------------------------------------------
 install_arch() {
     log_info "Installing packages (pacman)..."
@@ -126,7 +126,7 @@ install_arch() {
     for pkg in "${packages[@]}"; do
         if ! pacman -Q "$pkg" &>/dev/null; then
             log_info "Installing $pkg..."
-            sudo pacman -S --needed --noconfirm "$pkg" || warn "Failed to install $pkg, skipping..."
+            sudo pacman -S --needed --noconfirm "$pkg" || log_warn "Failed to install $pkg, skipping..."
         else
             log_info "$pkg already installed, skipping."
         fi
@@ -150,7 +150,7 @@ install_debian() {
     for pkg in "${packages[@]}"; do
         if ! dpkg -l "$pkg" &>/dev/null; then
             log_info "Installing $pkg..."
-            sudo apt install -y "$pkg" || warn "Failed to install $pkg, skipping..."
+            sudo apt install -y "$pkg" || log_warn "Failed to install $pkg, skipping..."
         else
             log_info "$pkg already installed, skipping."
         fi
@@ -162,7 +162,7 @@ install_debian() {
             sudo locale-gen en_US.UTF-8
         fi
     else
-        warn "locale-gen not found, skipping locale generation"
+        log_warn "locale-gen not found, skipping locale generation"
     fi
 
     # fd-find and bat install with different binary names on Debian/Ubuntu
@@ -257,7 +257,7 @@ else
 fi
 
 # ---------------------------------------------------
-# 2. Shell environment (Oh My Zsh + Plugins)
+# 4. Shell environment (Oh My Zsh + Plugins)
 # ---------------------------------------------------
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     log_info "Installing Oh My Zsh..."
@@ -297,7 +297,7 @@ else
 fi
 
 # ---------------------------------------------------
-# 3. Tmux Plugin Manager (TPM)
+# 5. Tmux Plugin Manager (TPM)
 # ---------------------------------------------------
 TPM_DIR="$HOME/.config/tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
@@ -309,16 +309,16 @@ if [ ! -d "$TPM_DIR" ]; then
         tmux new-session -d -s _setup \
             "sleep 3 \
             && ~/.config/tmux/plugins/tpm/bin/install_plugins \
-            && tmux kill-session -t _setup" || warn "tmux plugin install failed, run manually: <prefix>+I"
+            && tmux kill-session -t _setup" || log_warn "tmux plugin install failed, run manually: <prefix>+I"
     else
-        warn "tmux not found in PATH, skipping plugin install. Run <prefix>+I inside tmux later."
+        log_warn "tmux not found in PATH, skipping plugin install. Run <prefix>+I inside tmux later."
     fi
 else
     log_info "TPM already installed, skipping."
 fi
 
 # ---------------------------------------------------
-# 4. Fonts
+# 6. Fonts
 # ---------------------------------------------------
 FONT_DIR="$HOME/.local/share/fonts"
 if ! fc-list | grep -qi "JetBrainsMono"; then
@@ -335,7 +335,7 @@ else
 fi
 
 # ---------------------------------------------------
-# 5. Node Version Manager (fnm)
+# 7. Node Version Manager (fnm)
 # ---------------------------------------------------
 if ! command -v fnm &>/dev/null && [ ! -x "$HOME/.local/share/fnm/fnm" ]; then
     log_info "Installing fnm..."
@@ -356,13 +356,13 @@ else
 fi
 
 # ---------------------------------------------------
-# 6. Initialize submodules (Neovim config)
+# 8. Initialize submodules (Neovim config)
 # ---------------------------------------------------
 log_info "Initializing git submodules..."
 git submodule update --init --recursive
 
 # ---------------------------------------------------
-# 7. Symlink configs with Stow
+# 9. Symlink configs with Stow
 # ---------------------------------------------------
 log_info "Symlinking configs with Stow..."
 
@@ -380,7 +380,7 @@ else
             backup_needed=true
             mkdir -p "$BACKUP_DIR/$(dirname "$file")"
             mv "$target" "$BACKUP_DIR/$file"
-            warn "Backed up $target → $BACKUP_DIR/$file"
+            log_warn "Backed up $target → $BACKUP_DIR/$file"
         fi
     done < <(find . -not -path './.git/*' -not -name '.git' \
                   -not -name 'setup.sh' -not -name 'README.md' \
@@ -394,7 +394,7 @@ else
 
     # Oh My Zsh installer may have created a default .zshrc — remove it before stowing
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-        warn "Removing default .zshrc (ours will be symlinked)"
+        log_warn "Removing default .zshrc (ours will be symlinked)"
         mkdir -p "$BACKUP_DIR"
         mv "$HOME/.zshrc" "$BACKUP_DIR/.zshrc" 2>/dev/null || rm "$HOME/.zshrc"
     fi
@@ -407,7 +407,7 @@ fi
 log_info "All configs symlinked!"
 
 # ---------------------------------------------------
-# 8. Set Zsh as default shell
+# 10. Set Zsh as default shell
 # ---------------------------------------------------
 ZSH_PATH=$(which zsh)
 
@@ -424,7 +424,7 @@ if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
         export SHELL="$ZSH_PATH"
         log_info "Default shell changed. Log out and back in to take effect."
     else
-        warn "chsh failed. Set manually: chsh -s \$(which zsh)"
+        log_warn "chsh failed. Set manually: chsh -s \$(which zsh)"
     fi
 fi
 
