@@ -120,7 +120,7 @@ install_arch() {
         git zsh stow curl wget unzip
         fd bat eza btop ripgrep zoxide
         tmux fzf yazi fastfetch lazygit cliphist
-        kitty neovim chromium
+        kitty neovim chromium pulsemixer
         imagemagick ffmpeg
         python jq duf
     )
@@ -143,7 +143,7 @@ install_debian() {
         git zsh stow curl wget unzip gnupg
         software-properties-common locales libfuse2
         fd-find bat btop ripgrep
-        tmux fzf kitty chromium cliphist
+        tmux fzf kitty chromium cliphist pulsemixer
         imagemagick ffmpeg fontconfig
         python3 jq
         libgtk-3-bin

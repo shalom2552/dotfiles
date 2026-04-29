@@ -44,6 +44,7 @@ alias wf='ff | xargs -r wc -l'
 
 # System
 alias vol='amixer set Master'
+alias mix='pulsemixer'
 alias lock='xdg-screensaver lock'
 alias matrix='unimatrix -ab -c green -s 96'
 
