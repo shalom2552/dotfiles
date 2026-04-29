@@ -25,7 +25,7 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 on_error() {
     echo -e "\n${RED}[ERROR]${NC} Setup failed at line $LINENO.\n"
     echo -e "  Try run setup manually:\n"
-    echo -e "    cd ~/dotfiles && ./setup.sh\n"
+    echo -e "    cd ~/dotfiles && ./install.sh\n"
     exit 1
 }
 trap on_error ERR
@@ -91,7 +91,7 @@ if ! command -v git &>/dev/null; then
 fi
 
 # ---------------------------------------------------
-# 2. Clone and run setup.sh
+# 2. Clone dotfiles
 # ---------------------------------------------------
 if [ -d "$DOTFILES_DIR/.git" ]; then
     log_warn "~/dotfiles already exists. Pulling latest..."
@@ -252,8 +252,10 @@ install_debian_extras() {
 
 if [ "$DISTRO" = "arch" ]; then
     install_arch
-else
+elif [ "$DISTRO" = "debian" ]; then
     install_debian
+else
+    log_error "Unsupported distro."
 fi
 
 # ---------------------------------------------------
@@ -383,7 +385,7 @@ else
             log_warn "Backed up $target → $BACKUP_DIR/$file"
         fi
     done < <(find . -not -path './.git/*' -not -name '.git' \
-                  -not -name 'setup.sh' -not -name 'README.md' \
+                  -not -name 'README.md' \
                   -not -name 'LICENSE' -not -name '.gitignore' \
                   -not -name '.gitmodules' -not -name '.stowrc' \
                   -type f | sed 's|^\./||')
