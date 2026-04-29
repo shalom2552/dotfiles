@@ -361,9 +361,10 @@ if ! grep -qF "$ZSH_PATH" /etc/shells; then
 fi
 
 # Try chsh first
-if [ "$SHELL" != "$ZSH_PATH" ]; then
+if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
     info "Setting zsh as default shell..."
     if chsh -s "$ZSH_PATH"; then
+        export SHELL="$ZSH_PATH"
         info "Default shell changed. Log out and back in to take effect."
     else
         warn "chsh failed. Set manually: chsh -s \$(which zsh)"
