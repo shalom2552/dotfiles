@@ -371,7 +371,7 @@ git submodule update --init --recursive
 log_info "Symlinking configs with Stow..."
 
 # Skip backup if stow was already run (symlinks already exist)
-if [ -L "$HOME/.zshrc" ] && [ "$(readlink "$HOME/.zshrc")" = "dotfiles/.zshrc" ]; then
+if [ -L "$HOME/.zshrc" ] && [ "$(readlink -f "$HOME/.zshrc")" = "$DOTFILES_DIR/.zshrc" ]; then
     log_info "Stow already configured, re-stowing..."
     stow --adopt -R --no-folding .
     git checkout .
