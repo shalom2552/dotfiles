@@ -5,9 +5,11 @@
 # ENVIRONMENT
 # =============================================================================
 _EZA_COMMON="--icons --group-directories-first --git"
-_FD_COMMON="--hidden --exclude .npm --exclude .bun --exclude .vscode --exclude .rustup --exclude .cache"
-_FZF_THEME="--color=fg:#c0caf5,bg:-1,hl:#bb9af7,border:#7f7f7f --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff"
-_FZF_LAYOUT="--pointer=▶ --border=rounded --border-label-pos=center --height=100%"
+_FD_COMMON="--exclude go"
+# _FD_COMMON="--hidden --exclude .npm --exclude .bun --exclude .vscode --exclude .rustup --exclude .cache --exclude .git"
+# _FZF_THEME="--color=fg:#c0caf5,bg:-1,hl:#bb9af7,border:#7f7f7f --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff"
+_FZF_THEME="--color=dark"
+_FZF_LAYOUT="--pointer=▶ --border=rounded --border-label-pos=center --height=100% --style=full"
 _FZF_KEYBINDS="--bind=ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up,ctrl-/:toggle-preview,ctrl-a:select-all,ctrl-space:toggle,alt-d:deselect-all"
 _FZF_FILE_PREVIEW='bat --style=numbers --color=always --line-range :500 {}'
 

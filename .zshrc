@@ -82,17 +82,6 @@ export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FD_EXCLUDES"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --follow $FD_EXCLUDES"
 
-# FZF visual settings
-export FZF_DEFAULT_OPTS="
---prompt='🔍 ' --pointer='▶' --marker='✓'
-  --border --height 100% --border
-  --bind 'ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down'
-  --color=fg:#c0caf5,bg:-1,hl:#bb9af7
-  --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff
-  --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff
-  --color=marker:#9ece6a,spinner:#9ece6a,header:#9ece6a"
-
-
 # --- Zoxide ---
 eval "$(zoxide init zsh --cmd cd)"
 
