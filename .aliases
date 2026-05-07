@@ -86,20 +86,6 @@ ff() {
         ${=_FZF_THEME}
 }
 
-# Fuzzy directory changer
-cdf() {
-    local dir
-    dir=$(fd --type d ${=_FD_COMMON} | fzf \
-        --prompt="dir > " \
-        --border-label=" Directories " \
-        --preview 'eza -T --icons --git --color=always {} | head -200' \
-        --preview-window=right:50%:wrap \
-        ${=_FZF_LAYOUT} \
-        ${=_FZF_KEYBINDS} \
-        ${=_FZF_THEME})
-    [[ -n "$dir" ]] && cd "$dir"
-}
-
 # Fuzzy git log diff browser
 fdiff() {
     git log --oneline --color=always | fzf \
