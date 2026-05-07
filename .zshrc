@@ -21,7 +21,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 DISABLE_AUTO_TITLE="true"
 export ZSH_COMPDUMP="$HOME/.cache/zcompdump-$HOST-$ZSH_VERSION"
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git fzf-tab zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -55,13 +55,16 @@ if [ -d "$FNM_PATH" ]; then
   eval "$(fnm env --use-on-cd)"
 fi
 
+# =============================================================================
+# 4. Quality of life
+# =============================================================================
+
 # Colorize man pages
 export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
-
 # =============================================================================
-# 4. TOOL CONFIGURATIONS
+# 5. TOOL CONFIGURATIONS
 # =============================================================================
 
 # --- FZF ---
@@ -93,7 +96,7 @@ kitty-opacity() {
 
 
 # =============================================================================
-# 5. HOOKS
+# 6. HOOKS
 # =============================================================================
 # pwd and ls on cd
 chpwd() {
@@ -107,7 +110,7 @@ add-zsh-hook precmd () { print -Pn "\e]0;%~\a" }
 
 
 # =============================================================================
-# 6. ALIASES
+# 7. ALIASES
 # =============================================================================
 if [ -f ~/.aliases ]; then
     source ~/.aliases

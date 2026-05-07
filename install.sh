@@ -310,6 +310,14 @@ else
     log_info "zsh-syntax-highlighting already installed, skipping."
 fi
 
+if [ ! -d "$ZSH_CUSTOM/plugins/fzf-tab" ]; then
+    log_info "Installing fzf-tab..."
+    git clone https://github.com/Aloxaf/fzf-tab \
+        "$ZSH_CUSTOM/plugins/fzf-tab"
+else
+    log_info "fzf-tab already installed, skipping."
+fi
+
 # ---------------------------------------------------
 # 5. Tmux Plugin Manager (TPM)
 # ---------------------------------------------------
