@@ -63,6 +63,12 @@ fi
 export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
+# Accept autosuggestion word-by-word (Ctrl+Right)
+bindkey '^[[1;5C' forward-word
+
+# Immediate !! expansion on space
+bindkey ' ' magic-space
+
 # =============================================================================
 # 5. TOOL CONFIGURATIONS
 # =============================================================================
