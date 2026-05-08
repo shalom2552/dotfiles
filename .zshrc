@@ -63,6 +63,9 @@ fi
 export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
+# Include hidden files/dirs in tab completion
+setopt GLOB_DOTS
+
 # Accept autosuggestion word-by-word (Ctrl+Right)
 bindkey '^[[1;5C' forward-word
 
