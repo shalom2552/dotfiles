@@ -86,6 +86,7 @@ for f in /usr/share/fzf/completion.zsh \
     [[ -f "$f" ]] && source "$f" && break
 done
 
+export FZF_DEFAULT_OPTS="--style full"
 FD_EXCLUDES='--exclude .git --exclude node_modules --exclude .cache'
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FD_EXCLUDES"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
