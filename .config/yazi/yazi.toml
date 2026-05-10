@@ -6,12 +6,14 @@ ratio = [1, 1, 4]   # panes size ratio
 [[plugin.prepend_fetchers]]
 id  = "git"
 url = "*"
+group = "normal"
 run = "git"
 
 # show git status for directories
 [[plugin.prepend_fetchers]]
 id  = "git"
 url = "*/"
+group = "normal"
 run = "git"
 
 # preview scroll
