@@ -147,11 +147,12 @@ install_arch() {
 
 install_debian() {
     log_info "Installing packages (apt)..."
+    sudo add-apt-repository -y universe 2>/dev/null || true
     sudo apt update
 
     packages=(
         git zsh stow curl wget unzip gnupg
-        software-properties-common locales libfuse2
+        software-properties-common locales
         fd-find bat btop ripgrep
         tmux fzf kitty chromium cliphist pulsemixer
         imagemagick ffmpeg fontconfig
@@ -160,7 +161,7 @@ install_debian() {
     )
 
     for pkg in "${packages[@]}"; do
-        if ! dpkg -l "$pkg" &>/dev/null; then
+        if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
             log_info "Installing $pkg..."
             sudo apt install -y "$pkg" || log_warn "Failed to install $pkg, skipping..."
         else
