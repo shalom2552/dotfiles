@@ -430,6 +430,14 @@ fi
 log_info "All configs symlinked!"
 
 # ---------------------------------------------------
+# 9a. Install Yazi plugins
+# ---------------------------------------------------
+if command -v ya &>/dev/null; then
+    log_info "Installing Yazi plugins..."
+    ya pkg install || true
+fi
+
+# ---------------------------------------------------
 # 10. Set Zsh as default shell
 # ---------------------------------------------------
 ZSH_PATH=$(which zsh)
