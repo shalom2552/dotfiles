@@ -44,7 +44,7 @@ fi
 # ---------------------------------------------------
 # 0. Welcome
 # ---------------------------------------------------
-if [ "${REEXECED:-0}" != "1" ] && [ "${SKIP_WELCOME:-0}" != "1" ]; then
+if [ "${DOT_REEXECED:-0}" != "1" ] && [ "${SKIP_WELCOME:-0}" != "1" ]; then
 echo -e "${CYAN}"
 echo "     ███████╗██╗██╗     ███████╗███████╗"
 echo "     ██╔════╝██║██║     ██╔════╝██╔════╝"
@@ -96,7 +96,7 @@ fi
 # 2. Clone dotfiles
 # ---------------------------------------------------
 IS_UPDATE=false
-if [ "${REEXECED:-0}" = "1" ]; then
+if [ "${DOT_REEXECED:-0}" = "1" ]; then
     IS_UPDATE=true
 elif [ -d "$DOTFILES_DIR/.git" ]; then
     log_info "~/dotfiles already cloned, checking for updates..."
@@ -108,7 +108,7 @@ elif [ -d "$DOTFILES_DIR/.git" ]; then
         log_info "Dotfiles updated."
     fi
     log_info "Re-launching updated script..."
-    exec env REEXECED=1 bash "$DOTFILES_DIR/install.sh"
+    exec env DOT_REEXECED=1 bash "$DOTFILES_DIR/install.sh"
 else
     if [ -d "$DOTFILES_DIR" ]; then
         log_warn "~/dotfiles exists. Backing up to ~/dotfiles.bak..."
