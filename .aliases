@@ -20,7 +20,7 @@ alias v='nvim'
 alias fm='yazi'
 alias q='exit'
 alias zz='cdi'
-n() {xdg-open "${1:-.}"}
+n() { xdg-open "${1:-.}" 2>/dev/null; }
 
 # Replacements
 alias ls="eza -G $_EZA_COMMON"
