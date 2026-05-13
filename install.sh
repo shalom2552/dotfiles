@@ -150,13 +150,13 @@ install_debian() {
     if [ "$IS_UPDATE" = false ]; then
         sudo add-apt-repository -y universe 2>/dev/null || true
     fi
-    sudo apt update
+    sudo apt update -q
 
     packages=(
         git zsh stow curl wget unzip gnupg
         software-properties-common locales
         fd-find bat btop ripgrep
-        tmux fzf kitty chromium-browser cliphist pulsemixer
+        tmux kitty chromium-browser cliphist pulsemixer
         imagemagick ffmpeg fontconfig
         python3 jq
         libgtk-3-bin
@@ -207,6 +207,14 @@ install_debian_extras() {
         curl -fLo "$TMP_DIR/nvim-linux-x86_64.tar.gz" \
             https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
         sudo tar xzf "$TMP_DIR/nvim-linux-x86_64.tar.gz" -C /usr/local --strip-components=1
+    fi
+
+    # fzf — official install script handles arch detection; --bin installs binary only (shell integration is in dotfiles)
+    if ! command -v fzf &>/dev/null; then
+        log_info "Installing fzf..."
+        git clone --depth 1 https://github.com/junegunn/fzf.git "$TMP_DIR/fzf"
+        "$TMP_DIR/fzf/install" --bin
+        sudo mv "$TMP_DIR/fzf/bin/fzf" /usr/local/bin/
     fi
 
     # eza
