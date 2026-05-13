@@ -76,17 +76,7 @@ bindkey ' ' magic-space
 # =============================================================================
 
 # --- FZF ---
-# Source fzf bindings (path differs per distro)
-for f in /usr/share/fzf/key-bindings.zsh \
-         /usr/share/doc/fzf/examples/key-bindings.zsh \
-         /usr/share/fzf/shell/key-bindings.zsh; do
-    [[ -f "$f" ]] && source "$f" && break
-done
-for f in /usr/share/fzf/completion.zsh \
-         /usr/share/doc/fzf/examples/completion.zsh \
-         /usr/share/fzf/shell/completion.zsh; do
-    [[ -f "$f" ]] && source "$f" && break
-done
+command -v fzf &>/dev/null && source <(fzf --zsh)
 
 export FZF_DEFAULT_OPTS="--style full"
 FD_EXCLUDES='--exclude .git --exclude node_modules --exclude .cache'
