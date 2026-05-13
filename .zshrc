@@ -55,6 +55,7 @@ if [ -d "$FNM_PATH" ]; then
   eval "$(fnm env --use-on-cd)"
 fi
 
+
 # =============================================================================
 # 4. Quality of life
 # =============================================================================
@@ -66,11 +67,9 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # Include hidden files/dirs in tab completion
 setopt GLOB_DOTS
 
-# Accept autosuggestion word-by-word (Ctrl+Right)
-bindkey '^[[1;5C' forward-word
-
 # Immediate !! expansion on space
 bindkey ' ' magic-space
+
 
 # =============================================================================
 # 5. TOOL CONFIGURATIONS
