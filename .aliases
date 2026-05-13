@@ -30,11 +30,13 @@ alias lsa="eza -al --header $_EZA_COMMON"
 alias tree="eza -T --icons --git"
 alias df='duf'
 
-# Globals
-alias -g G='| grep'
-alias -g L='| less'
-alias -g B='| bat'
-alias -g C='| wc -l'
+# Globals (zsh only)
+if [ -n "$ZSH_VERSION" ]; then
+    alias -g G='| grep'
+    alias -g L='| less'
+    alias -g B='| bat'
+    alias -g C='| wc -l'
+fi
 
 # Fuzzy tools
 alias vf='ff | xargs -r ${EDITOR:-nvim}'
