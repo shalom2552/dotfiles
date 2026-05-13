@@ -147,14 +147,16 @@ install_arch() {
 
 install_debian() {
     log_info "Installing packages (apt)..."
-    sudo add-apt-repository -y universe 2>/dev/null || true
+    if [ "$IS_UPDATE" = false ]; then
+        sudo add-apt-repository -y universe 2>/dev/null || true
+    fi
     sudo apt update
 
     packages=(
         git zsh stow curl wget unzip gnupg
         software-properties-common locales
         fd-find bat btop ripgrep
-        tmux fzf kitty chromium cliphist pulsemixer
+        tmux fzf kitty chromium-browser cliphist pulsemixer
         imagemagick ffmpeg fontconfig
         python3 jq
         libgtk-3-bin
@@ -434,7 +436,7 @@ log_info "All configs symlinked!"
 # ---------------------------------------------------
 if command -v ya &>/dev/null; then
     log_info "Installing Yazi plugins..."
-    ya pkg install || true
+    ya pkg install &>/dev/null || true
 fi
 
 # ---------------------------------------------------
