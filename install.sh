@@ -101,7 +101,7 @@ if [ "${DOT_REEXECED:-0}" = "1" ]; then
 elif [ -d "$DOTFILES_DIR/.git" ]; then
     log_info "~/dotfiles already cloned, checking for updates..."
     cd "$DOTFILES_DIR"
-    pull_out=$(git pull --rebase 2>&1) || log_error "Pull failed."
+    pull_out=$(git pull --rebase) || log_error "Pull failed."
     if echo "$pull_out" | grep -q "Already up to date\|Current branch.*is up to date"; then
         log_info "Dotfiles already up to date."
     else

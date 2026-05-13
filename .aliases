@@ -75,11 +75,13 @@ alias tdev='tmux-dev'
 
 # open file explorer
 n() {
+    [ "$1" = "-h" ] && echo "ff [query] [dir] — fuzzy find files; multi-select; preview with bat" && return
     xdg-open "${1:-.}" 2>/dev/null;
 }
 
 # Fuzzy file finder
 ff() {
+    [ "$1" = "-h" ] && echo "ff [query] [dir]  — fuzzy find files; multi-select; preview with bat" && return
     fd --type f "${_FD_COMMON[@]}" "${2:-.}" | fzf --multi \
         "${_FZF_LAYOUT[@]}" \
         --border-label=" Files " \
@@ -91,6 +93,8 @@ ff() {
 
 # Fuzzy git log diff browser
 fdiff() {
+    [ "$1" = "-h" ] && echo "fdiff  — browse git log; preview full diff per commit" && return
+    git rev-parse --git-dir &>/dev/null || { echo "fdiff: not a git repository" >&2; return 1; }
     git log --oneline --color=always | fzf \
         --ansi \
         --prompt="commit > " \
@@ -104,7 +108,8 @@ fdiff() {
 
 # Fuzzy process killer
 kf() {
-  command ps aux --no-header \
+    [ "$1" = "-h" ] && echo "kf  — fuzzy kill processes; Space: mark, Enter: kill, Ctrl-K: kill -9" && return
+    command ps aux --no-header \
     | sed -E 's/ +/ /g' \
     | fzf --multi \
         --prompt="proc > " \
@@ -133,6 +138,7 @@ kf() {
 
 # Browse installed packages
 pkgf() {
+    [ "$1" = "-h" ] && echo "pkgf  — fuzzy browse installed packages; preview package info" && return
     local pkg
     if command -v pacman &> /dev/null; then
         pkg=$(pacman -Q | fzf \
@@ -145,10 +151,10 @@ pkgf() {
             "${_FZF_THEME[@]}")
         [[ -n "$pkg" ]] && pacman -Qi "${pkg%% *}" | bat --language=yaml --color=always --style=plain --paging=never
     elif command -v apt &> /dev/null; then
-        pkg=$(apt list --installed 2>/dev/null | fzf \
+        pkg=$(apt list --installed 2>/dev/null | grep -v "^Listing" | fzf \
             --prompt="pkg > " \
             --border-label=" Packages " \
-            --preview 'apt-cache show {1} | bat --language=yaml --color=always --style=plain' \
+            --preview 'apt-cache show "$(echo {1} | cut -d/ -f1)" | bat --language=yaml --color=always --style=plain' \
             --preview-window=right:50%:wrap \
             "${_FZF_LAYOUT[@]}" \
             "${_FZF_KEYBINDS[@]}" \
@@ -163,3 +169,4 @@ pkgf() {
 # View all shortcuts
 alias shortcuts='bat ~/.aliases --color=always --style=plain | grep "alias" | fzf --ansi --border-label=" Aliases "'
 alias sc='shortcuts'
+
