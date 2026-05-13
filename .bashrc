@@ -20,6 +20,9 @@ fi
 # Editor
 export EDITOR=nvim
 
+# zoxide cd
+eval "$(zoxide init bash --cmd cd)"
+
 # Aliases
 if [ -f ~/.aliases ]; then
     source ~/.aliases
