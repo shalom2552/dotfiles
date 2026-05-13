@@ -125,6 +125,9 @@ cd "$DOTFILES_DIR"
 # ---------------------------------------------------
 install_arch() {
     log_info "Installing packages (pacman)..."
+    if [ "$IS_UPDATE" = false ]; then
+        sudo pacman -Syu
+    fi
 
     packages=(
         git zsh stow curl wget unzip
@@ -149,8 +152,8 @@ install_debian() {
     log_info "Installing packages (apt)..."
     if [ "$IS_UPDATE" = false ]; then
         sudo add-apt-repository -y universe 2>/dev/null || true
+        sudo apt update -q
     fi
-    sudo apt update -q
 
     packages=(
         git zsh stow curl wget unzip gnupg
