@@ -64,6 +64,7 @@ alias gsw='git switch'
 alias lgt='lazygit'
 
 # Tmux
+alias t='tmux'
 alias ta='tmux attach -t'
 alias tls='tmux ls'
 alias tk='tmux kill-session -t'
