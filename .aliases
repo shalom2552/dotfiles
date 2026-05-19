@@ -68,7 +68,10 @@ alias t='tmux'
 alias ta='tmux attach -t'
 alias tls='tmux ls'
 alias tk='tmux kill-session -t'
+
+# Bin scripts
 alias tdev='tmux-dev'
+alias gc='gcommit'
 
 # =============================================================================
 # FUNCTIONS
