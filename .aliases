@@ -61,7 +61,10 @@ alias gdf='git diff'
 alias gcm='git commit -m'
 alias gco='git checkout'
 alias gsw='git switch'
+
+# Tools
 alias lgt='lazygit'
+alias ldk='lazydocker'
 
 # Tmux
 alias t='tmux'
