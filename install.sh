@@ -300,12 +300,15 @@ fi
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
-    log_info "Installing Powerlevel10k..."
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-        "$ZSH_CUSTOM/themes/powerlevel10k"
+if ! command -v starship &>/dev/null; then
+    log_info "Installing Starship..."
+    if command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm starship || log_warn "Starship install failed"
+    else
+        curl -sS https://starship.rs/install.sh | sh -s -- --yes || log_warn "Starship install failed"
+    fi
 else
-    log_info "Powerlevel10k already installed, skipping."
+    log_info "Starship already installed, skipping."
 fi
 
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
@@ -488,6 +491,5 @@ if [ "$IS_UPDATE" = true ]; then
 else
     log_info "Dotfiles setup complete!"
     echo -e "  ${CYAN}→${NC} Run ${BOLD}${GREEN}exec zsh${NC} to start"
-    echo -e "  ${CYAN}→${NC} Run ${BOLD}${GREEN}p10k configure${NC} to change the prompt"
 fi
 echo ""

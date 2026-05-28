@@ -1,31 +1,21 @@
 # =============================================================================
-# 0. STARTUP
+# 1. STARTUP
 # =============================================================================
 fastfetch
-
-
-# =============================================================================
-# 1. CORE & PRE-INIT
-# =============================================================================
-# Enable Powerlevel10k instant prompt. Should stay close to the top.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 
 # =============================================================================
 # 2. OH-MY-ZSH SETUP
 # =============================================================================
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_THEME=""
 DISABLE_AUTO_TITLE="true"
 export ZSH_COMPDUMP="$HOME/.cache/zcompdump-$HOST-$ZSH_VERSION"
 
 plugins=(git fzf-tab zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+eval "$(starship init zsh)"
 
 
 # =============================================================================
