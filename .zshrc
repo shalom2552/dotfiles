@@ -89,7 +89,6 @@ kitty-opacity() {
 # =============================================================================
 # pwd and ls on cd
 chpwd() {
-    print -P "%F{blue} ▶  %~%f"
     eza -G --icons --group-directories-first --git --header
 }
 
