@@ -4,37 +4,33 @@ palette = "tokyo_night"
 
 # ── Layout ────────────────────────────────────────────────────────────────────
 format = """
-[](#a3aed2)\
-$os\
-[](fg:#a3aed2 bg:#769ff0)\
+[](cap)\
+$os$hostname\
+[](fg:cap bg:dblue)\
 $directory\
-[](fg:#769ff0 bg:#394260)\
+[](fg:dblue bg:navy)\
 $git_branch$git_status\
-[](fg:#394260 bg:#212736)\
+[](fg:navy bg:dark)\
 $jobs$status$cmd_duration\
-[](fg:#212736 bg:#1d2230)\
+[](fg:dark bg:darker)\
 $time\
-[](fg:#1d2230)\
+[](fg:darker)\
 \n$character"""
-# palette names work in module styles only, not format inline styles — hex stays here
-# add $username$hostname before $os for remote/SSH awareness
-# add $git_state to show REBASING/MERGING inline in git segment
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 [palettes.tokyo_night]
 cap    = "#a3aed2"
 blue   = "#769ff0"
+dblue  = "#474f76"
 navy   = "#394260"
-dark   = "#212736"
-darker = "#1d2230"
+dark   = "#2a3346"
+darker = "#20283b"
 
-# Text
 black  = "#090c0c"
 white  = "#e3e5e5"
 muted  = "#a0a9cb"
 dim    = "#a9b1d6"
 
-# Accents
 green  = "#9ece6a"
 red    = "#f7768e"
 gold   = "#e0af68"
@@ -44,125 +40,85 @@ gold   = "#e0af68"
 [os]
 disabled = false
 style    = "bg:cap fg:black"
-format   = "[ $symbol ]($style)"
+format   = "[$symbol]($style)"
+
+[hostname]
+ssh_only = true
+style    = "bg:cap fg:black"
+format   = '[@$hostname]($style)'
 
 [directory]
-style                     = "fg:white bg:blue"
-format                    = "[ $path]($style)"
+style                     = "fg:white bg:dblue"
+format                    = "[ $path ]($style)"
 truncation_length         = 5
 truncation_symbol         = "…/"
 fish_style_pwd_dir_length = 2
-truncate_to_repo          = true
-home_symbol               = "󰋜"
-read_only                 = "󰌾"
+truncate_to_repo          = false
+read_only                 = " 󰌾 "
 read_only_style           = "fg:red"
-repo_root_style           = "bold fg:white bg:blue"
 before_repo_root_style    = "fg:dim bg:blue"
-# truncate_to_repo = false — always show full path from ~
-
 
 [git_branch]
-symbol = "󰘬"
-style  = "bg:navy"
-format = '[[ $symbol $branch ](fg:blue bg:navy)]($style)'
+symbol            = "󰘬"
+style             = "fg:blue bg:navy"
+format            = '[ $symbol $branch ]($style)'
 truncation_length = 30
 truncation_symbol = "…"
-# only_attached = true  — hide when in detached HEAD state
 
+[git_state]
+disabled = false
+style    = "bg:navy"
+format   = '[\($state( $progress_current/$progress_total)\)]($style)'
+
+[git_status]
+style      = "bg:navy"
+format     = '[$conflicted](fg:red bg:navy)[$deleted](fg:red bg:navy)[$renamed$modified$untracked](fg:gold bg:navy)[$staged](fg:green bg:navy)[$stashed](fg:muted bg:navy)[$ahead_behind](fg:blue bg:navy)'
+stashed    = " "
+conflicted = " "
+ahead      = " ${count}"
+behind     = " ${count}"
+diverged   = "  ${ahead_count} ${behind_count}"
+untracked  = " "
+modified   = " "
+staged     = " "
+renamed    = " "
+deleted    = " "
 
 [jobs]
-# symbol alternatives — " " "󰒓 " "⚙ " "󰣖 "
 symbol           = "󰑮 "
-style            = "bg:dark"
-format           = '[[ $symbol$number ](fg:gold bg:dark)]($style)'
+style            = "fg:gold bg:dark"
+format           = '[ $symbol$number ]($style)'
 number_threshold = 2
 symbol_threshold = 1
 
 [status]
 disabled              = false
-symbol                = "󰅙 "
-# symbol alternatives — " " "✘ " "󰄬 " "󱓻 "
-not_executable_symbol = "󱎘 "
-not_found_symbol      = "󰍉 "
-sigint_symbol         = "󰗼 "
-signal_symbol         = "󱐋 "
+symbol                = " 󰅙 "
+not_executable_symbol = " 󱎘 "
+not_found_symbol      = " 󰍉 "
+sigint_symbol         = " 󰗼 "
+signal_symbol         = " 󱐋 "
 map_symbol            = true
-style                 = "bg:dark"
-format                = '[[$symbol$common_meaning$signal_name$maybe_int ](fg:red bg:dark)]($style)'
-# success_symbol = "󰄬 "  — show on clean exit. others: "✔ " " "
-# recognize_signal_code = true  — differentiate signals from plain exit codes
-# pipestatus = true             — show exit code per pipe stage
-# pipestatus_format = '[$pipestatus]($style) '
+style                 = "fg:red bg:dark"
+format                = '[$symbol$common_meaning$signal_name$maybe_int ]($style)'
 
 [cmd_duration]
 min_time = 2000
-style    = "bg:dark"
-format   = '[[ 󱎫 $duration ](fg:gold bg:dark)]($style)'
-
-[fill]
-symbol = ""
-# symbol alternatives — "─" (dash) "·" (dots) "═" (double) "━" (bold) "╌" (dashed)
-# style = "fg:navy bg:dark"  — colored separator using git accent
+style    = "fg:gold bg:dark"
+format   = '[ 󱎫 $duration ]($style)'
 
 [time]
 disabled    = false
 time_format = "%R"
-# time_format = "%T"      # — HH:MM:SS
-# time_format = "%I:%M %p" # — 12-hour
-# utc_time_offset = "+2" #   — force timezone offset
-style       = "bg:darker"
-format      = '[[ 󱑒 $time ](fg:muted bg:darker)]($style)'
+style       = "fg:muted bg:darker"
+format      = '[ 󱑒 $time ]($style)'
 
 [character]
 success_symbol = "[❯](bold green)"
 error_symbol   = "[❯](bold red)"
-# success_symbol alternatives — "❯" "➜" "▶" "λ" "»" "›" "$" " " "󰄾 " "❱"
 
-# ── Optional modules ──────────────────────────────────────────────────────────
-
-# System
-
-# [memory_usage]    shows RAM %. useful to watch during heavy builds
-# disabled  = false
-# threshold = 70
-# symbol    = "󰍛 "
-# format    = "[$symbol${ram_pct} ]($style)"
-# style     = "fg:red"
-
-# [battery]         silent on desktop (no battery = never shows). useful on laptops
-# disabled = true
-# [[battery.display]]
-# threshold = 20
-# style = "bold fg:red"
-
-# Remote / SSH
-
-# [username]        shows user@host. useful on SSH or shared machines
-# show_always = false
-
-# [hostname]
-# ssh_only = true
-# format   = "[$hostname ]($style)"
-# style    = "fg:muted"
-
-# [container]       shows when inside docker / podman / lxc / nspawn
-# disabled = true
-
-# [shell]           shows which shell you're in (zsh / bash / fish)
-# disabled = true
-
-# Git extras
-
-# [git_commit]      shows current commit hash at prompt
-# commit_hash_length = 7
-# tag_symbol = "󰓼 "
-
-# [git_metrics]     shows +N/-N lines changed since last commit
-# disabled = true
-
-# [git_state]       shows REBASING / MERGING / CHERRY-PICKING — on by default
-# disabled = false
-# format = '[\($state( $progress_current/$progress_total)\)]($style) '
+[fill]
+symbol = ""
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 [os.symbols]
@@ -210,21 +166,6 @@ Ubuntu            = " "
 Unknown           = " "
 Void              = " "
 Windows           = "󰍲 "
-
-[git_status]
-style      = "bg:navy"
-format     = '[[$conflicted](fg:red bg:navy)[$deleted](fg:red bg:navy)[$renamed$modified$untracked](fg:gold bg:navy)[$staged](fg:green bg:navy)[$stashed](fg:muted bg:navy)[$ahead_behind](fg:blue bg:navy) ]($style)'
-stashed    = "󰓗 "
-conflicted = "󰞇 "
-ahead      = "󰶣 ${count}"
-behind     = "󰶡 ${count}"
-diverged   = "󰶤 󰶣 ${ahead_count}󰶡 ${behind_count}"
-untracked  = "󰈚 "
-modified   = "󰏫 "
-staged     = "󰐖 "
-renamed    = "󰑕 "
-deleted    = "󰛉 "
-up_to_date = ""
 
 [directory.substitutions]
 "Desktop"   = " "
