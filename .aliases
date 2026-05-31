@@ -83,7 +83,7 @@ alias gc='gcommit'
 # open file explorer
 n() {
     [ "$1" = "-h" ] && echo "ff [query] [dir] — fuzzy find files; multi-select; preview with bat" && return
-    xdg-open "${1:-.}" 2>/dev/null;
+    xdg-open "${1:-.}" 2>/dev/null &;
 }
 
 # Fuzzy file finder
