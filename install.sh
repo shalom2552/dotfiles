@@ -135,7 +135,7 @@ install_arch() {
         tmux fzf yazi fastfetch lazygit cliphist
         kitty neovim chromium pulsemixer
         imagemagick ffmpeg
-        python jq duf
+        python jq duf gum
     )
 
     for pkg in "${packages[@]}"; do
@@ -272,6 +272,14 @@ install_debian_extras() {
             "https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_x86_64.tar.gz"
         tar xf "$TMP_DIR/duf.tar.gz" -C "$TMP_DIR" duf
         sudo mv "$TMP_DIR/duf" /usr/local/bin/
+    fi
+
+    if ! command -v gum &>/dev/null; then
+        log_info "Installing gum..."
+        sudo mkdir -p /etc/apt/keyrings
+        curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+        echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+        sudo apt update && sudo apt install -y gum
     fi
 
 }
