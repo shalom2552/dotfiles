@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+TOOL=$([[ -z "$1" ]] && gum input --placeholder "Tool" --no-show-help || echo "$1")
+HELP=$([[ -z "$2" ]] && gum input --placeholder "Help" --no-show-help || echo "$2")
+
+HELP="$(echo "$HELP" | tr ' ' '+')"
+
+[[ -n "$TOOL" && -n "$HELP" ]] && curl cht.sh/"$TOOL"/"$HELP"
