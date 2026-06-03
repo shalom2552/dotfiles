@@ -17,6 +17,9 @@ source $ZSH/oh-my-zsh.sh
 
 eval "$(starship init zsh)"
 
+# ignore ./ and ../ in cd completion
+zstyle ':completion:*' special-dirs false
+
 
 # =============================================================================
 # 3. ENVIRONMENT & PATHS
