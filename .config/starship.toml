@@ -8,6 +8,7 @@ format = """
 $os$hostname\
 [](fg:cap bg:dblue)\
 $directory\
+$python$container\
 [](fg:dblue bg:navy)\
 $git_branch$git_status\
 [](fg:navy bg:dark)\
@@ -50,7 +51,7 @@ format   = '[@$hostname]($style)'
 [directory]
 style                     = "fg:white bg:dblue"
 format                    = "[ $path ]($style)"
-truncation_length         = 5
+truncation_length         = 3
 truncation_symbol         = "…/"
 fish_style_pwd_dir_length = 2
 truncate_to_repo          = false
@@ -119,6 +120,15 @@ error_symbol   = "[❯](bold red)"
 
 [fill]
 symbol = ""
+
+[python]
+format = '[(\($virtualenv\))]($style)'
+style = "fg:gold bg:dblue"
+
+[container]
+format = '[$symbol \[$name\]]($style)'
+style = "fg:gold bg:dblue"
+
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 [os.symbols]
