@@ -37,10 +37,10 @@ if [ -n "$ZSH_VERSION" ]; then
 fi
 
 # Fuzzy tools
-alias vf='ff | xargs -r ${EDITOR:-nvim}'
-alias bf='ff | xargs -r bat'
-alias cf='ff | xargs -r cat'
-alias wf='ff | xargs -r wc -l'
+vf() { ff "$@" | xargs -r ${EDITOR:-nvim}; }
+bf() { ff "$@" | xargs -r bat; }
+cf() { ff "$@" | xargs -r cat; }
+wf() { ff "$@" | xargs -r wc -l; }
 
 # System
 alias vol='amixer set Master'
@@ -82,20 +82,25 @@ alias gc='gcommit'
 
 # open file explorer
 n() {
-    [ "$1" = "-h" ] && echo "ff [query] [dir] — fuzzy find files; multi-select; preview with bat" && return
+    [ "$1" = "-h" ] && echo "ff [dir] — fuzzy find files; multi-select; preview with bat" && return
     xdg-open "${1:-.}" 2>/dev/null &;
 }
 
 # Fuzzy file finder
 ff() {
-    [ "$1" = "-h" ] && echo "ff [query] [dir]  — fuzzy find files; multi-select; preview with bat" && return
-    fd --type f "${_FD_COMMON[@]}" "${2:-.}" | fzf --multi \
+    [ "$1" = "-h" ] && echo "ff [dir]  — fuzzy find files in dir (default: .); multi-select; preview with bat" && return
+    local dir
+    dir=$(realpath "${1:-.}") || return 1
+    fd --type f "${_FD_COMMON[@]}" . "$dir" \
+    | sed "s|^$dir/||" \
+    | fzf --multi \
         "${_FZF_LAYOUT[@]}" \
         --border-label=" Files " \
-        --preview="$_FZF_FILE_PREVIEW" \
-        --preview-window=right:70%:wrap \
+        --preview="bat --style=numbers --color=always --line-range :500 $dir/{}" \
+        --preview-window=right:60%:wrap \
         "${_FZF_KEYBINDS[@]}" \
-        "${_FZF_THEME[@]}"
+        "${_FZF_THEME[@]}" \
+    | sed "s|^|$dir/|"
 }
 
 # Fuzzy git log diff browser
