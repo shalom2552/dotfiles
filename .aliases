@@ -20,6 +20,12 @@ alias fm='yazi'
 alias q='exit'
 alias zz='cdi'
 
+# flags
+alias cp='cp -vi'
+alias mv='mv -vi'
+alias rm='rm -I'
+alias mkdir='mkdir -pv'
+
 # Replacements
 alias ls="eza -G ${_EZA_COMMON[*]}"
 alias la="eza -a ${_EZA_COMMON[*]}"
@@ -61,6 +67,7 @@ alias gdf='git diff'
 alias gcm='git commit -m'
 alias gco='git checkout'
 alias gsw='git switch'
+alias grs='git reset --hard HEAD'
 
 # Tools
 alias lgt='lazygit'
