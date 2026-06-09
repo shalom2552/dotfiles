@@ -1,6 +1,6 @@
 [mgr]
 show_hidden = true
-ratio = [1, 1, 4]   # panes size ratio
+ratio = [1, 2, 5]   # panes size ratio
 
 # show git status for files
 [[plugin.prepend_fetchers]]
