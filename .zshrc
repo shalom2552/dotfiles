@@ -53,9 +53,11 @@ fi
 # 4. Quality of life
 # =============================================================================
 
-# Colorize man pages
+# Colorize and scrollable man pages and less
 export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export LESS="--mouse --wheel-lines=3 -R"
+export BAT_PAGER="less --mouse --wheel-lines=3 -R"
 
 # Include hidden files/dirs in tab completion
 setopt GLOB_DOTS
