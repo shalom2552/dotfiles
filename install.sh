@@ -159,7 +159,7 @@ install_debian() {
         git zsh stow curl wget unzip gnupg
         software-properties-common locales
         fd-find bat btop ripgrep
-        tmux kitty chromium-browser cliphist pulsemixer
+        tmux kitty chromium-browser pulsemixer
         imagemagick ffmpeg fontconfig
         python3 jq
         libgtk-3-bin
