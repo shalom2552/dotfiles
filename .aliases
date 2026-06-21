@@ -185,6 +185,26 @@ pkgf() {
     fi
 }
 
+# Notes
+nn() {
+    _dir=$HOME/Documents/.notes && mkdir -p "$_dir"
+    [ "$1" = "-h" ] && echo "nn [name] - create a new note; at ($_dir)" && return
+    _note="${1:-note_$(date +'%b%d_%H%M')}.md"
+    [ ! -f "$_note" ] && touch "$_note" && echo "Note created: $_note" 
+    nvim "$_dir/$_note"
+}
+
+nls() {
+    [ "$1" = "-h" ] && echo "nls [rm, show] - list all notes or remove a note with rm;" && return
+    _dir=$HOME/Documents/.notes
+    [ -z "$(ls -a1 "$_dir")" ] && echo "No notes found. create using 'nn'." && return
+    _note=$(ls -a1 "$_dir" | gum choose --no-show-help --header "Notes:")
+    [ "$1" = "-p" ] && echo "$_dir/$_note" && return
+    [ "$1" = "rm" ] && rm "$_dir/$_note" && echo "Note deleted: $_note" && return
+    [ "$1" = "show" ] && ( command -v glow &> /dev/null && glow -p "$_dir/$_note" || cat "$_dir/$_note" ) && return
+    [ -n "$_note" ] && nvim "$_dir/$_note"
+}
+
 # View all shortcuts
 alias shortcuts='bat ~/.aliases --color=always --style=plain | grep "alias" | fzf --ansi --border-label=" Aliases "'
 alias sc='shortcuts'
