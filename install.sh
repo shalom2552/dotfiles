@@ -416,7 +416,7 @@ log_info "Symlinking configs with Stow..."
 # Skip backup if stow was already run (symlinks already exist)
 if [ -L "$HOME/.zshrc" ] && [ "$(readlink -f "$HOME/.zshrc")" = "$DOTFILES_DIR/.zshrc" ]; then
     log_info "Stow already configured, re-stowing..."
-    stow --adopt -R --no-folding .
+    stow --adopt -R --target="$HOME" --no-folding .
     git checkout . 2>/dev/null
 else
     # Back up any existing files that would conflict
@@ -447,7 +447,7 @@ else
     fi
 
     # Stow all files
-    stow --adopt --no-folding .
+    stow --adopt -R --target="$HOME" --no-folding .
     git checkout . 2>/dev/null
 fi
 

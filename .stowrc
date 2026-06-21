@@ -1,13 +1,13 @@
---target=~
+--no-folding
 
---ignore='.stowrc'
+--ignore=\.stowrc
 
---ignore='setup.sh'
---ignore='install.sh'
+--ignore=setup\.sh
+--ignore=install\.sh
 
---ignore='README.md'
---ignore='LICENSE'
+--ignore=README\.md
+--ignore=LICENSE
 
---ignore='.gitignore'
---ignore='.gitmodules'
-
+--ignore=\.gitignore
+--ignore=\.gitmodules
+--ignore=\.git
