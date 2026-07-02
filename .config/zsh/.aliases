@@ -205,6 +205,6 @@ nls() {
 }
 
 # View all shortcuts
-alias shortcuts='bat ~/.aliases --color=always --style=plain | grep "alias" | fzf --ansi --border-label=" Aliases "'
+alias shortcuts='bat "$ZDOTDIR/.aliases" --color=always --style=plain | grep "alias" | fzf --ansi --border-label=" Aliases "'
 alias sc='shortcuts'
 
