@@ -295,18 +295,20 @@ fi
 # ---------------------------------------------------
 # 4. Shell environment (Oh My Zsh + Plugins)
 # ---------------------------------------------------
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
+OMZ_DIR="${ZSH:-$HOME/.local/share/oh-my-zsh}"
+if [ ! -d "$OMZ_DIR" ]; then
     log_info "Installing Oh My Zsh..."
     # RUNZSH=no  — don't switch to zsh mid-script
     # CHSH=no    — we handle chsh ourselves at the end
     # KEEP_ZSHRC=yes — don't overwrite .zshrc (we stow ours later)
-    RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    # ZSH=...    — install into XDG data dir, not $HOME/.oh-my-zsh
+    RUNZSH=no CHSH=no KEEP_ZSHRC=yes ZSH="$OMZ_DIR" \
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 else
     log_info "Oh My Zsh already installed, skipping."
 fi
 
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$OMZ_DIR/custom}"
 
 if ! command -v starship &>/dev/null; then
     log_info "Installing Starship..."

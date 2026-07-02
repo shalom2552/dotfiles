@@ -8,6 +8,7 @@ export XDG_STATE_HOME="$HOME/.local/state"
 
 # ========== ZSH ==========
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export ZSH="$XDG_DATA_HOME/oh-my-zsh"
 
 # ========== ENVIRONMENT ========== 
 export EDITOR=nvim
@@ -18,6 +19,7 @@ export LANG=en_US.UTF-8
 
 # ========== GPG ==========
 export GPG_TTY=$(tty)
+export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 
 # ========== PATH ==========
 [[ -d "$HOME/.local/bin" ]]  && export PATH="$HOME/.local/bin:$PATH"

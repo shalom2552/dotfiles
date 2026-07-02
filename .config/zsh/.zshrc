@@ -8,7 +8,6 @@ fastfetch
 # =============================================================================
 # OH-MY-ZSH
 # =============================================================================
-export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""
 DISABLE_AUTO_TITLE="true"
 export ZSH_COMPDUMP="$XDG_CACHE_HOME/zcompdump-$HOST-$ZSH_VERSION"
@@ -32,8 +31,6 @@ setopt INTERACTIVE_COMMENTS                 # allow # comments when typing inter
 setopt AUTO_PUSHD                           # cd pushes old dir onto stack
 setopt PUSHD_IGNORE_DUPS                    # no duplicate stack entries
 setopt GLOB_DOTS                            # include hidden files/dirs in tab completion
-setopt AUTO_CD
-setopt NO_BEEP
 
 # =============================================================================
 # HISTORY
