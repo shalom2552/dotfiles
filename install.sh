@@ -187,12 +187,12 @@ install_debian() {
     # Create symlinks so configs and aliases work the same way
     if [ ! -L "$HOME/.local/bin/fd" ] && command -v fdfind &>/dev/null; then
         mkdir -p "$HOME/.local/bin"
-        ln -sf "$(which fdfind)" "$HOME/.local/bin/fd"
+        ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
         log_info "Symlinked fdfind → fd"
     fi
     if [ ! -L "$HOME/.local/bin/bat" ] && command -v batcat &>/dev/null; then
         mkdir -p "$HOME/.local/bin"
-        ln -sf "$(which batcat)" "$HOME/.local/bin/bat"
+        ln -sf "$(command -v batcat)" "$HOME/.local/bin/bat"
         log_info "Symlinked batcat → bat"
     fi
 
@@ -295,7 +295,7 @@ fi
 # ---------------------------------------------------
 # 4. Shell environment (Oh My Zsh + Plugins)
 # ---------------------------------------------------
-OMZ_DIR="${ZSH:-$HOME/.local/share/oh-my-zsh}"
+OMZ_DIR="$HOME/.local/share/oh-my-zsh"
 if [ ! -d "$OMZ_DIR" ]; then
     log_info "Installing Oh My Zsh..."
     # RUNZSH=no  — don't switch to zsh mid-script
@@ -466,7 +466,7 @@ fi
 # ---------------------------------------------------
 # 10. Set Zsh as default shell
 # ---------------------------------------------------
-ZSH_PATH=$(which zsh)
+ZSH_PATH=$(command -v zsh)
 
 # Ensure zsh is in /etc/shells
 if ! grep -qF "$ZSH_PATH" /etc/shells; then
@@ -481,7 +481,7 @@ if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
         export SHELL="$ZSH_PATH"
         log_info "Default shell changed. Log out and back in to take effect."
     else
-        log_warn "chsh failed. Set manually: chsh -s \$(which zsh)"
+        log_warn "chsh failed. Set manually: chsh -s \$(command -v zsh)"
     fi
 fi
 
