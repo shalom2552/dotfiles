@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+CONFDIR="$HOME/.config"
+
+# ========== OPTIONS ==========
+declare -A options=(
+    ["config"]="$HOME/.local/bin/config"
+    ["kitty"]="$CONFDIR/kitty/kitty.conf"
+    ["tmux"]="$CONFDIR/tmux/tmux.conf"
+    ["zsh"]="$CONFDIR/zsh/.zshrc"
+    ["alias"]="$CONFDIR/zsh/.aliases"
+    ["local"]="$CONFDIR/zsh/.localconf"
+)
+
+# ========== GLOABALS ==========
+BAT_FLGS=(--color=always --style=plain --map-syntax '\*.conf:INI')
+FZF_FLGS=(--ansi --cycle --with-nth=1 --delimiter="\t" --layout=reverse-list --preview-window right:80%)
+
+# ========== LOGIC ==========
+choice=$(
+    for k in "${!options[@]}"; do
+        printf "%s\t%s\n" "$k" "${options[$k]}"
+    done \
+    | fzf "${FZF_FLGS[@]}" \
+        --preview "bat ${BAT_FLGS[*]} {2}" \
+        --bind "enter:execute(nvim {2})"
+)
