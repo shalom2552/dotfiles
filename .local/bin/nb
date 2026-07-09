@@ -13,7 +13,8 @@ set -uo pipefail
 # === Variables === #
 
 export NOTES_DIR="$HOME/Documents/.notes"
-export LIST_CMD="ls -A1 $NOTES_DIR"
+# export LIST_CMD="ls -A1 $NOTES_DIR"
+export LIST_CMD="find $NOTES_DIR -maxdepth 1 -type f -printf %f\n"
 
 export MAIN_PROMPT="> "
 export NEW_PROMPT="New: "
@@ -51,7 +52,15 @@ on_preview() {
     fi
 }
 
-export -f on_enter on_esc on_preview
+on_view() {
+    if command -v glow &>/dev/null; then
+        glow -p "$NOTES_DIR/${1:-}"
+    else
+        bat --style=plain --paging=always "$NOTES_DIR/${1:-}"
+    fi
+}
+
+export -f on_enter on_esc on_preview on_view
 export SHELL=bash
 
 # === Main script === #
@@ -64,6 +73,7 @@ $LIST_CMD | fzf --cycle --layout=reverse-list \
     --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
     --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
     --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
+    --bind='ctrl-v:execute(on_view {})' \
     --bind='enter:transform:on_enter {}' \
     --bind='esc:transform:on_esc'
 
