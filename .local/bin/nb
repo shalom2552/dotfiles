@@ -22,6 +22,11 @@ export DELETE_PROMPT="Delete? [Y/n] "
 export RESET="change-prompt($MAIN_PROMPT)+enable-search+clear-query"
 export DONE="$RESET+reload($LIST_CMD)"
 
+# === Git pull === #
+[ -d "$NOTES_DIR/.git" ] \
+    && (( $(date +%s) - $(stat -c %Y "$NOTES_DIR/.git/FETCH_HEAD" 2>/dev/null || echo 0) > 600 )) \
+    && timeout 3 git -C "$NOTES_DIR" pull &>/dev/null
+
 # === Functions === #
 
 on_enter() {
@@ -61,4 +66,15 @@ $LIST_CMD | fzf --cycle --layout=reverse-list \
     --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
     --bind='enter:transform:on_enter {}' \
     --bind='esc:transform:on_esc'
+
+# === Git push === #
+if [ -d "$NOTES_DIR/.git" ]; then
+    [ -n "$(git -C "$NOTES_DIR" status --porcelain)" ] \
+        && git -C "$NOTES_DIR" add -A \
+        && git -C "$NOTES_DIR" commit -m "Update notes $(date +'%Y-%m-%d %H:%M')"
+    [ "$(git -C "$NOTES_DIR" rev-list --count '@{u}..HEAD' 2>/dev/null || echo 0)" -gt 0 ] \
+        && git -C "$NOTES_DIR" push
+fi &>/dev/null
+
+exit 0
 
