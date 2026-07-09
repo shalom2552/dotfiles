@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# ~/.local/bin/nb
+# Author: shalom2552
+# Date:   2026-07-09
+#
+# Fuzzy notes browser: enter edits, ctrl-n new, ctrl-r rename, ctrl-d delete,
+# esc cancels. ctrl-n/r/d turn the fzf query line into an input field; enter
+# dispatches on the current prompt.
+#
+# Dependencies: fzf, nvim, script (util-linux); glow for pretty preview (bat fallback)
+set -uo pipefail
+
+# === Variables === #
+
+export NOTES_DIR="$HOME/Documents/.notes"
+export LIST_CMD="ls -A1 $NOTES_DIR"
+
+export MAIN_PROMPT="> "
+export NEW_PROMPT="New: "
+export RENAME_PROMPT="Rename: "
+export DELETE_PROMPT="Delete? [Y/n] "
+export RESET="change-prompt($MAIN_PROMPT)+enable-search+clear-query"
+export DONE="$RESET+reload($LIST_CMD)"
+
+# === Functions === #
+
+on_enter() {
+    local note="$NOTES_DIR/${1:-}"
+    case "$FZF_PROMPT" in
+        "$NEW_PROMPT")    echo "execute(nvim \"$NOTES_DIR/${FZF_QUERY:-note_$(date +'%b%d_%H%M')}.md\")+$DONE" ;;
+        "$RENAME_PROMPT") [[ -n "$FZF_QUERY" ]] && echo "execute-silent(mv \"$note\" \"$NOTES_DIR/$FZF_QUERY.md\")+$DONE" || echo "$DONE" ;;
+        "$DELETE_PROMPT") [[ "$FZF_QUERY" != "n" ]] && echo "execute-silent(rm \"$note\")+$DONE" || echo "$DONE" ;;
+        *)                echo "execute(nvim \"$note\")" ;;
+    esac
+}
+
+on_esc() {
+    [[ "$FZF_PROMPT" == "$MAIN_PROMPT" ]] && echo "abort" || echo "$RESET"
+}
+
+on_preview() {
+    if command -v glow &>/dev/null; then
+        script -qec "glow -s dark -w ${FZF_PREVIEW_COLUMNS:-80} '$NOTES_DIR/${1:-}'" /dev/null
+    else
+        bat --color=always --style=plain "$NOTES_DIR/${1:-}"
+    fi
+}
+
+export -f on_enter on_esc on_preview
+export SHELL=bash
+
+# === Main script === #
+
+mkdir -p "$NOTES_DIR"
+
+$LIST_CMD | fzf --cycle --layout=reverse-list \
+    --prompt="$MAIN_PROMPT" --pointer="▶" --border-label=" Notes " \
+    --preview='on_preview {}' --preview-window=right:80%:wrap --preview-label=" Preview " \
+    --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
+    --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
+    --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
+    --bind='enter:transform:on_enter {}' \
+    --bind='esc:transform:on_esc'
+
