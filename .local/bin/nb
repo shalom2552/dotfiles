@@ -13,15 +13,15 @@ set -uo pipefail
 # === Variables === #
 
 export NOTES_DIR="$HOME/Documents/.notes"
-# export LIST_CMD="ls -A1 $NOTES_DIR"
-export LIST_CMD="find $NOTES_DIR -maxdepth 1 -type f -printf %f\n"
+
+list_notes() { find "$NOTES_DIR" -maxdepth 1 -type f -printf '%f\n'; }
 
 export MAIN_PROMPT="> "
 export NEW_PROMPT="New: "
 export RENAME_PROMPT="Rename: "
 export DELETE_PROMPT="Delete? [Y/n] "
 export RESET="change-prompt($MAIN_PROMPT)+enable-search+clear-query"
-export DONE="$RESET+reload($LIST_CMD)"
+export DONE="$RESET+reload(list_notes)"
 
 # === Git pull === #
 [ -d "$NOTES_DIR/.git" ] \
@@ -60,14 +60,14 @@ on_view() {
     fi
 }
 
-export -f on_enter on_esc on_preview on_view
+export -f list_notes on_enter on_esc on_preview on_view
 export SHELL=bash
 
 # === Main script === #
 
 mkdir -p "$NOTES_DIR"
 
-$LIST_CMD | fzf --cycle --layout=reverse-list \
+list_notes | fzf --cycle --layout=reverse-list \
     --prompt="$MAIN_PROMPT" --pointer="▶" --border-label=" Notes " \
     --preview='on_preview {}' --preview-window=right:80%:wrap --preview-label=" Preview " \
     --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
