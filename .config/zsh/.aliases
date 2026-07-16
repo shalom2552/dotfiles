@@ -25,6 +25,7 @@ alias cp='cp -vi'
 alias mv='mv -vi'
 alias rm='rm -I'
 alias mkdir='mkdir -pv'
+mkcd() { mkdir -p $1 && cd $1; }
 
 # Replacements
 alias ls="eza -G ${_EZA_COMMON[*]}"
@@ -74,10 +75,9 @@ alias lgt='lazygit'
 alias ldk='lazydocker'
 
 # Tmux
-alias t='tmux'
-alias ta='tmux attach -t'
 alias tls='tmux ls'
 alias tk='tmux kill-session -t'
+t() { tmux new-session -A -s "${1:-Tmux_$RANDOM}"; }
 
 # Bin scripts
 alias tdev='tmux-dev'
