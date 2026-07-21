@@ -28,6 +28,11 @@ fi
 eval "$(zoxide init bash --cmd cd)"
 
 # Aliases
-if [ -f ~/.aliases ]; then
-    source ~/.aliases
+if [ -f $ZDOTDIR/.aliases ]; then
+    source $ZDOTDIR/.aliases
+fi
+
+# per-machine local overrides (untracked)
+if [ -f "$ZDOTDIR/.localconf" ]; then
+    source "$ZDOTDIR/.localconf"
 fi

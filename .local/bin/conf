@@ -11,6 +11,7 @@ declare -A options=(
     ["alias"]="$CONFDIR/zsh/.aliases"
     ["local"]="$CONFDIR/zsh/.localconf"
     ["starship"]="$CONFDIR/starship.toml"
+    ["bashrc"]="$HOME/.bashrc"
 )
 
 # ========== GLOABALS ==========
