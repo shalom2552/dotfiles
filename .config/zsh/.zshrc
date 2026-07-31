@@ -72,7 +72,7 @@ FD_EXCLUDES='--exclude .git --exclude node_modules --exclude .cache'
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FD_EXCLUDES"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --follow $FD_EXCLUDES"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_DEFAULT_OPTS="--style full --preview 'bat --style=numbers --color=always {}'"
+export FZF_DEFAULT_OPTS="--style full --preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --style=numbers --color=always -l sh'"
 
 # --- Zoxide ---
 eval "$(zoxide init zsh --cmd cd)"
