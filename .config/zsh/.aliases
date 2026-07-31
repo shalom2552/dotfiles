@@ -87,6 +87,10 @@ alias gc='gcommit'
 # FUNCTIONS
 # =============================================================================
 
+# Calculate using python
+_calc() { python -c "print(f'{$*:,}')"; }
+alias calc='noglob _calc'
+
 # open file explorer
 n() {
     [ "$1" = "-h" ] && echo "ff [dir] — fuzzy find files; multi-select; preview with bat" && return
