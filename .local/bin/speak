@@ -53,12 +53,24 @@ download_model() {
 
 # --- FUNCTIONS -----------------------------------
 ensure_piper() {
-    if ! command -v piper-tts &>/dev/null; then
+    if ! command -v piper &>/dev/null; then
         echo "piper-tts is not installed."
         if confirm "Install it now via pip?"; then
             pip install --break-system-packages piper-tts 2>/dev/null || pip install piper-tts
         else
             echo "Aborting: piper-tts required."
+            exit 1
+        fi
+    fi
+}
+
+ensure_aplay() {
+    if ! command -v aplay &>/dev/null; then
+        echo "aplay (alsa-utils) is not installed." >&2
+        if confirm "Install it now via apt?"; then
+            sudo apt update && sudo apt install -y alsa-utils
+        else
+            echo "Aborting: aplay required." >&2
             exit 1
         fi
     fi
@@ -115,6 +127,7 @@ main() {
     [ $# -eq 0 ] && usage # no input
 
     ensure_piper
+    ensure_aplay
     ensure_model
 
     local piper_flags=(--model "$MODEL_PATH" --length-scale 0.9 --volume 0.8 --output-raw)
@@ -124,9 +137,9 @@ main() {
     echo "Playing..."
     {
         if [ -f "$1" ]; then # file input
-            piper-tts "${piper_flags[@]}" -i "$1" 2>/dev/null | "${play_cmd[@]}"
+            piper "${piper_flags[@]}" -i "$1" | "${play_cmd[@]}"
         elif [ -n "$1" ]; then # text input
-            echo "$1" | piper-tts "${piper_flags[@]}" | "${play_cmd[@]}"
+            echo "$1" | piper "${piper_flags[@]}" | "${play_cmd[@]}"
         fi
     } &>/dev/null || true
 
