@@ -27,12 +27,12 @@ fi
 # zoxide as cd
 eval "$(zoxide init bash --cmd cd)"
 
-# Aliases
-if [ -f $ZDOTDIR/.aliases ]; then
-    source $ZDOTDIR/.aliases
-fi
+# sources
+_load() { [ -f "$1" ] && source "$1"; }
 
-# per-machine local overrides (untracked)
-if [ -f "$ZDOTDIR/.localconf" ]; then
-    source "$ZDOTDIR/.localconf"
-fi
+_load "$HOME/.zshenv"           # zsh env
+_load "$ZDOTDIR/.aliases"       # aliases
+_load "$ZDOTDIR/.localconf"     # local config
+
+unset -f _load
+
