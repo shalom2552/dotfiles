@@ -32,6 +32,8 @@ setopt AUTO_PUSHD                           # cd pushes old dir onto stack
 setopt PUSHD_IGNORE_DUPS                    # no duplicate stack entries
 setopt GLOB_DOTS                            # include hidden files/dirs in tab completion
 
+stty -echoctl                               # don't echo ^C/^Z etc. when typed
+
 # =============================================================================
 # HISTORY
 # =============================================================================
