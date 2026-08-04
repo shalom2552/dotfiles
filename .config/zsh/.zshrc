@@ -4,6 +4,7 @@
 # STARTUP
 # =============================================================================
 fastfetch
+[ -f "$ZDOTDIR/.localinit" ] && source "$ZDOTDIR/.localinit"; # local init script
 
 # =============================================================================
 # OH-MY-ZSH
@@ -80,15 +81,13 @@ export FZF_DEFAULT_OPTS="--style full --preview 'echo {} | sed -E \"s/^[ ]*[0-9]
 eval "$(zoxide init zsh --cmd cd)"
 
 # =============================================================================
-# FILES
+# SOURCES
 # =============================================================================
+_load() { [ -f "$1" ] && source "$1"; }
 
-# aliases
-if [ -f "$ZDOTDIR/.aliases" ]; then
-    source "$ZDOTDIR/.aliases"
-fi
+_load "$ZDOTDIR/.aliases"
+_load "$ZDOTDIR/.localconf"
 
-# per-machine local overrides (untracked)
-if [ -f "$ZDOTDIR/.localconf" ]; then
-    source "$ZDOTDIR/.localconf"
-fi
+unset -f _load
+
+
