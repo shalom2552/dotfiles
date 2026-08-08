@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# ~/.local/bin/n
+# Author: shalom2552
+# Date:   2026-08-08
+#
+# Open a directory in the graphical file explorer, detached from the terminal.
+#
+# Usage: n [dir]   (default: current directory)
+
+case "${1:-}" in
+    -h|--help) echo "Usage: n [dir] — open dir in file explorer (default: .)"; exit 0 ;;
+esac
+
+setsid -f xdg-open "${1:-.}" >/dev/null 2>&1

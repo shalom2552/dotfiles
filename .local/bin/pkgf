@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# ~/.local/bin/pkgf
+# Author: shalom2552
+# Date:   2026-08-08
+#
+# Fuzzy browse installed packages. Preview shows package info; the selection
+# is printed in full on exit. Supports pacman and apt.
+#
+# Usage: pkgf [-h|--help]
+#
+# Dependencies: fzf, bat, pacman or apt
+
+set -uo pipefail
+
+FZF_OPTS=(
+    --pointer=▶ --border=rounded --border-label-pos=center
+    --height=100% --style=full --color=dark
+    --prompt="pkg > " --preview-window=right:50%:wrap
+    --bind=ctrl-d:half-page-down,ctrl-u:half-page-up
+    --bind=ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up
+    --bind=ctrl-/:toggle-preview
+)
+
+case "${1:-}" in
+    -h|--help) echo "Usage: pkgf — fuzzy browse installed packages; preview package info"; exit 0 ;;
+esac
+
+if command -v pacman &>/dev/null; then
+    pkg=$(pacman -Q | fzf "${FZF_OPTS[@]}" \
+        --border-label=" Packages " \
+        --preview 'pacman -Qi {1} | bat --language=yaml --color=always --style=plain')
+    [ -n "$pkg" ] && pacman -Qi "${pkg%% *}" | bat --language=yaml --color=always --style=plain --paging=never
+elif command -v apt &>/dev/null; then
+    pkg=$(apt list --installed 2>/dev/null | grep -v "^Listing" | fzf "${FZF_OPTS[@]}" \
+        --border-label=" Packages " \
+        --preview 'apt-cache show "$(echo {1} | cut -d/ -f1)" | bat --language=yaml --color=always --style=plain')
+    [ -n "$pkg" ] && apt-cache show "${pkg%%/*}" | bat --language=yaml --color=always --style=plain --paging=never
+else
+    echo "pkgf: neither pacman nor apt found" >&2
+    exit 1
+fi
