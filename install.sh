@@ -23,12 +23,12 @@ log_warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 on_error() {
-    echo -e "\n${RED}[ERROR]${NC} Setup failed at line $LINENO.\n"
+    echo -e "\n${RED}[ERROR]${NC} Setup failed at line $1.\n"
     echo -e "  Try run setup manually:\n"
     echo -e "    cd ~/dotfiles && ./install.sh\n"
     exit 1
 }
-trap on_error ERR
+trap 'on_error $LINENO' ERR
 
 # ---------------------------------------------------
 # Detect distro
@@ -61,7 +61,7 @@ echo -e "  Detected:      ${GREEN}$DISTRO${NC}"
 echo -e "  Est. time:     ${GREEN}~5-10 min${NC}"
 echo ""
 echo -e "  ${BOLD}── What's included ──${NC}"
-echo "    • Zsh + Oh My Zsh + Powerlevel10k"
+echo "    • Zsh + Oh My Zsh + Starship"
 echo "    • Neovim (LazyVim), tmux, kitty"
 echo "    • CLI tools: yazi, btop, lazygit, fzf, zoxide, pulsemixer, ..."
 echo "    • fnm (Node), JetBrainsMono Nerd Font"
@@ -101,8 +101,9 @@ if [ "${DOT_REEXECED:-0}" = "1" ]; then
 elif [ -d "$DOTFILES_DIR/.git" ]; then
     log_info "~/dotfiles already cloned, checking for updates..."
     cd "$DOTFILES_DIR"
-    pull_out=$(git pull --rebase) || log_error "Pull failed."
-    if echo "$pull_out" | grep -q "Already up to date\|Current branch.*is up to date"; then
+    rev_before=$(git rev-parse HEAD)
+    git pull --rebase >/dev/null || log_error "Pull failed."
+    if [ "$rev_before" = "$(git rev-parse HEAD)" ]; then
         log_info "Dotfiles already up to date."
     else
         log_info "Dotfiles updated."
@@ -111,8 +112,9 @@ elif [ -d "$DOTFILES_DIR/.git" ]; then
     exec env DOT_REEXECED=1 bash "$DOTFILES_DIR/install.sh"
 else
     if [ -d "$DOTFILES_DIR" ]; then
-        log_warn "~/dotfiles exists. Backing up to ~/dotfiles.bak..."
-        mv "$DOTFILES_DIR" "$HOME/dotfiles.bak"
+        DOTFILES_BAK="$HOME/dotfiles.bak-$(date +%Y%m%d-%H%M%S)"
+        log_warn "~/dotfiles exists. Backing up to $DOTFILES_BAK..."
+        mv "$DOTFILES_DIR" "$DOTFILES_BAK"
     fi
     log_info "Cloning dotfiles repository..."
     git clone --recurse-submodules https://github.com/shalom2552/dotfiles.git "$DOTFILES_DIR"
@@ -134,7 +136,7 @@ install_arch() {
         fd bat eza btop ripgrep zoxide
         tmux fzf yazi fastfetch lazygit cliphist
         kitty neovim chromium pulsemixer
-        imagemagick ffmpeg
+        imagemagick ffmpeg fontconfig
         python jq duf gum
     )
 
@@ -373,12 +375,13 @@ FONT_DIR="$HOME/.local/share/fonts"
 if ! fc-list | grep -qi "JetBrainsMono"; then
     log_info "Installing JetBrainsMono Nerd Font..."
     mkdir -p "$FONT_DIR"
-    cd "$FONT_DIR"
-    curl -fLO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-    unzip -o JetBrainsMono.zip
-    rm -f JetBrainsMono.zip
-    fc-cache -fv
-    cd "$DOTFILES_DIR"
+    (
+        cd "$FONT_DIR"
+        curl -fLO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+        unzip -o JetBrainsMono.zip
+        rm -f JetBrainsMono.zip
+        fc-cache -fv
+    )
 else
     log_info "JetBrainsMono Nerd Font already installed, skipping."
 fi
@@ -415,43 +418,36 @@ git submodule update --init --recursive
 # ---------------------------------------------------
 log_info "Symlinking configs with Stow..."
 
-# Skip backup if stow was already run (symlinks already exist)
-if [ -L "$HOME/.zshrc" ] && [ "$(readlink -f "$HOME/.zshrc")" = "$DOTFILES_DIR/.zshrc" ]; then
-    log_info "Stow already configured, re-stowing..."
-    stow --adopt -R --target="$HOME" --no-folding .
-    git checkout . 2>/dev/null
-else
-    # Back up any existing files that would conflict
-    backup_needed=false
-    while IFS= read -r file; do
-        target="$HOME/$file"
-        if [ -e "$target" ] && [ ! -L "$target" ]; then
-            backup_needed=true
-            mkdir -p "$BACKUP_DIR/$(dirname "$file")"
-            mv "$target" "$BACKUP_DIR/$file"
-            log_warn "Backed up $target → $BACKUP_DIR/$file"
-        fi
-    done < <(find . -not -path './.git/*' -not -name '.git' \
-                  -not -name 'README.md' \
-                  -not -name 'LICENSE' -not -name '.gitignore' \
-                  -not -name '.gitmodules' -not -name '.stowrc' \
-                  -type f | sed 's|^\./||')
-
-    if [ "$backup_needed" = true ]; then
-        log_info "Existing configs backed up to $BACKUP_DIR"
+# Back up conflicting files
+backup_needed=false
+while IFS= read -r file; do
+    target="$HOME/$file"
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+        backup_needed=true
+        mkdir -p "$BACKUP_DIR/$(dirname "$file")"
+        mv "$target" "$BACKUP_DIR/$file"
+        log_warn "Backed up $target → $BACKUP_DIR/$file"
     fi
+done < <(find . -not -path './.git/*' -not -name '.git' \
+              -not -name 'README.md' \
+              -not -name 'LICENSE' -not -name '.gitignore' \
+              -not -name '.gitmodules' -not -name '.stowrc' \
+              -type f | sed 's|^\./||')
 
-    # Oh My Zsh installer may have created a default .zshrc — remove it before stowing
-    if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-        log_warn "Removing default .zshrc (ours will be symlinked)"
-        mkdir -p "$BACKUP_DIR"
-        mv "$HOME/.zshrc" "$BACKUP_DIR/.zshrc" 2>/dev/null || rm "$HOME/.zshrc"
-    fi
-
-    # Stow all files
-    stow --adopt -R --target="$HOME" --no-folding .
-    git checkout . 2>/dev/null
+if [ "$backup_needed" = true ]; then
+    log_info "Existing configs backed up to $BACKUP_DIR"
 fi
+
+# Back up ~/.zshrc (ours lives at .config/zsh/.zshrc)
+if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+    log_warn "Removing default .zshrc (ours will be symlinked)"
+    mkdir -p "$BACKUP_DIR"
+    mv "$HOME/.zshrc" "$BACKUP_DIR/.zshrc" 2>/dev/null || rm "$HOME/.zshrc"
+fi
+
+# Stow all files
+stow --adopt -R --target="$HOME" --no-folding .
+git checkout . 2>/dev/null
 
 log_info "All configs symlinked!"
 
