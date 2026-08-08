@@ -4,11 +4,9 @@
 # ENVIRONMENT
 # =============================================================================
 _EZA_COMMON=(--icons --group-directories-first --git)
-_FD_COMMON=(--hidden --exclude .npm --exclude .bun --exclude .vscode --exclude .rustup --exclude .cache --exclude .git --exclude go)
 _FZF_THEME=(--color=dark)
 _FZF_LAYOUT=(--pointer=▶ --border=rounded --border-label-pos=center --height=100% --style=full)
 _FZF_KEYBINDS=(--bind=ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up,ctrl-/:toggle-preview,ctrl-a:select-all,ctrl-space:toggle,alt-d:deselect-all)
-_FZF_FILE_PREVIEW='bat --style=numbers --color=always --line-range :500 {}'
 
 # =============================================================================
 # ALIASES
@@ -44,10 +42,10 @@ if [ -n "$ZSH_VERSION" ]; then
 fi
 
 # Fuzzy tools
-vf() { ff "$@" | xargs -r ${EDITOR:-nvim}; }
-bf() { ff "$@" | xargs -r bat; }
-cf() { ff "$@" | xargs -r cat; }
-wf() { ff "$@" | xargs -r wc -l; }
+alias vf='fzf | xargs -r ${EDITOR:-nvim}'
+alias bf='fzf | xargs -r bat'
+alias cf='fzf | xargs -r cat'
+alias wf='fzf | xargs -r wc -l'
 
 # System
 alias vol='amixer set Master'
@@ -93,41 +91,9 @@ alias calc='noglob _calc'
 
 # open file explorer
 n() {
-    [ "$1" = "-h" ] && echo "ff [dir] — fuzzy find files; multi-select; preview with bat" && return
+    [ "$1" = "-h" ] && echo "n [dir] — open dir in file explorer (default: .)" && return
     xdg-open "${1:-.}" >/dev/null 2>&1 &
     disown
-}
-
-# Fuzzy file finder
-ff() {
-    [ "$1" = "-h" ] && echo "ff [dir]  — fuzzy find files in dir (default: .); multi-select; preview with bat" && return
-    local dir
-    dir=$(realpath "${1:-.}") || return 1
-    fd --type f "${_FD_COMMON[@]}" . "$dir" \
-    | sed "s|^$dir/||" \
-    | fzf --multi \
-        "${_FZF_LAYOUT[@]}" \
-        --border-label=" Files " \
-        --preview="bat --style=numbers --color=always --line-range :500 $dir/{}" \
-        --preview-window=right:60%:wrap \
-        "${_FZF_KEYBINDS[@]}" \
-        "${_FZF_THEME[@]}" \
-    | sed "s|^|$dir/|"
-}
-
-# Fuzzy git log diff browser
-fdiff() {
-    [ "$1" = "-h" ] && echo "fdiff  — browse git log; preview full diff per commit" && return
-    git rev-parse --git-dir &>/dev/null || { echo "fdiff: not a git repository" >&2; return 1; }
-    git log --oneline --color=always | fzf \
-        --ansi \
-        --prompt="commit > " \
-        --border-label=" Git Log " \
-        --preview 'git show --color=always {1}' \
-        --preview-window=right:60%:wrap \
-        "${_FZF_LAYOUT[@]}" \
-        "${_FZF_KEYBINDS[@]}" \
-        "${_FZF_THEME[@]}"
 }
 
 # Fuzzy process killer
