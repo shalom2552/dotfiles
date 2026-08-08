@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
-
-# =============================================================================
-# ENVIRONMENT
-# =============================================================================
-_EZA_COMMON=(--icons --group-directories-first --git)
-_FZF_THEME=(--color=dark)
-_FZF_LAYOUT=(--pointer=▶ --border=rounded --border-label-pos=center --height=100% --style=full)
-_FZF_KEYBINDS=(--bind=ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up,ctrl-/:toggle-preview,ctrl-a:select-all,ctrl-space:toggle,alt-d:deselect-all)
+# Aliases only, keep it portable for bash, zsh and fish.
 
 # =============================================================================
 # ALIASES
@@ -23,26 +16,17 @@ alias cp='cp -vi'
 alias mv='mv -vi'
 alias rm='rm -I'
 alias mkdir='mkdir -pv'
-mkcd() { mkdir -p $1 && cd $1; }
 
 # Replacements
-alias ls="eza -G ${_EZA_COMMON[*]}"
-alias la="eza -a ${_EZA_COMMON[*]}"
-alias ll="eza -l --header ${_EZA_COMMON[*]}"
-alias lsa="eza -al --header ${_EZA_COMMON[*]}"
+alias ls="eza -G --icons --group-directories-first --git"
+alias la="eza -a --icons --group-directories-first --git"
+alias ll="eza -l --header --icons --group-directories-first --git"
+alias lsa="eza -al --header --icons --group-directories-first --git"
 alias tree="eza -T --icons --git"
 alias df='duf'
 
-# Globals (zsh only)
-if [ -n "$ZSH_VERSION" ]; then
-    alias -g G='| grep'
-    alias -g L='| less'
-    alias -g B='| bat'
-    alias -g C='| wc -l'
-fi
-
 # Fuzzy tools
-alias vf='fzf | xargs -r ${EDITOR:-nvim}'
+alias vf='fzf | xargs -r $EDITOR'
 alias bf='fzf | xargs -r bat'
 alias cf='fzf | xargs -r cat'
 alias wf='fzf | xargs -r wc -l'
@@ -75,88 +59,9 @@ alias ldk='lazydocker'
 # Tmux
 alias tls='tmux ls'
 alias tk='tmux kill-session -t'
-t() { tmux new-session -A -s "${1:-Tmux_$RANDOM}"; }
+alias t='tmux new-session -A -s'
 
 # Bin scripts
 alias tdev='tmux-dev'
 alias gc='gcommit'
-
-# =============================================================================
-# FUNCTIONS
-# =============================================================================
-
-# Calculate using python
-_calc() { python -c "print(f'{$*:,}')"; }
-alias calc='noglob _calc'
-
-# open file explorer
-n() {
-    [ "$1" = "-h" ] && echo "n [dir] — open dir in file explorer (default: .)" && return
-    xdg-open "${1:-.}" >/dev/null 2>&1 &
-    disown
-}
-
-# Fuzzy process killer
-kf() {
-    [ "$1" = "-h" ] && echo "kf  — fuzzy kill processes; Space: mark, Enter: kill, Ctrl-K: kill -9" && return
-    command ps aux --no-header \
-    | sed -E 's/ +/ /g' \
-    | fzf --multi \
-        --prompt="proc > " \
-        --border-label=" Processes " \
-        --header="Space: mark  Enter: kill  Ctrl-K: kill -9" \
-        --preview '
-          echo "PID:     {2}"
-          echo "USER:    {1}"
-          echo "CPU:     {3}%"
-          echo "MEM:     {4}%"
-          echo "TTY:     {7}"
-          echo "TIME:    {10}"
-          echo ""
-          echo "Command:"
-          echo "{11..}"
-        ' \
-        --preview-window="right:50%:wrap" \
-        --bind="space:toggle" \
-        --bind="ctrl-k:execute-silent(echo {+2} | xargs -r kill -9)+reload(command ps aux --no-header | sed -E 's/ +/ /g')" \
-        "${_FZF_LAYOUT[@]}" \
-        "${_FZF_KEYBINDS[@]}" \
-        "${_FZF_THEME[@]}" \
-        --ansi \
-    | awk '{print $2}' | xargs -r kill
-}
-
-# Browse installed packages
-pkgf() {
-    [ "$1" = "-h" ] && echo "pkgf  — fuzzy browse installed packages; preview package info" && return
-    local pkg
-    if command -v pacman &> /dev/null; then
-        pkg=$(pacman -Q | fzf \
-            --prompt="pkg > " \
-            --border-label=" Packages " \
-            --preview 'pacman -Qi {1} | bat --language=yaml --color=always --style=plain' \
-            --preview-window=right:50%:wrap \
-            "${_FZF_LAYOUT[@]}" \
-            "${_FZF_KEYBINDS[@]}" \
-            "${_FZF_THEME[@]}")
-        [[ -n "$pkg" ]] && pacman -Qi "${pkg%% *}" | bat --language=yaml --color=always --style=plain --paging=never
-    elif command -v apt &> /dev/null; then
-        pkg=$(apt list --installed 2>/dev/null | grep -v "^Listing" | fzf \
-            --prompt="pkg > " \
-            --border-label=" Packages " \
-            --preview 'apt-cache show "$(echo {1} | cut -d/ -f1)" | bat --language=yaml --color=always --style=plain' \
-            --preview-window=right:50%:wrap \
-            "${_FZF_LAYOUT[@]}" \
-            "${_FZF_KEYBINDS[@]}" \
-            "${_FZF_THEME[@]}")
-        [[ -n "$pkg" ]] && apt-cache show "${pkg%%/*}" | bat --language=yaml --color=always --style=plain --paging=never
-    else
-        echo "Error: Neither pacman nor apt found on this system" >&2
-        return 1
-    fi
-}
-
-# View all shortcuts
-alias shortcuts='alias | bat --color=always --style=plain -l sh | fzf --ansi --no-preview --tac'
-alias sc='shortcuts'
 
