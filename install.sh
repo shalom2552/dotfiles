@@ -132,7 +132,7 @@ install_arch() {
     fi
 
     packages=(
-        git zsh stow curl wget unzip
+        git zsh fish stow curl wget unzip
         fd bat eza btop ripgrep zoxide
         tmux fzf yazi fastfetch lazygit cliphist
         kitty neovim chromium pulsemixer
@@ -158,7 +158,7 @@ install_debian() {
     fi
 
     packages=(
-        git zsh stow curl wget unzip gnupg
+        git zsh fish stow curl wget unzip gnupg
         software-properties-common locales
         fd-find bat btop ripgrep
         tmux kitty chromium-browser pulsemixer
@@ -345,6 +345,29 @@ if [ ! -d "$ZSH_CUSTOM/plugins/fzf-tab" ]; then
         "$ZSH_CUSTOM/plugins/fzf-tab"
 else
     log_info "fzf-tab already installed, skipping."
+fi
+
+# ---------------------------------------------------
+# 4a. Fish (fisher + foreign-env)
+# ---------------------------------------------------
+if command -v fish &>/dev/null; then
+    if ! fish -c 'type -q fisher' 2>/dev/null; then
+        log_info "Installing fisher..."
+        fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher' \
+            || log_warn "fisher install failed"
+    else
+        log_info "fisher already installed, skipping."
+    fi
+
+    # fenv lets fish read our bash-syntax .zshenv
+    if ! fish -c 'type -q fenv' 2>/dev/null; then
+        log_info "Installing foreign-env plugin..."
+        fish -c 'fisher install oh-my-fish/plugin-foreign-env' || log_warn "foreign-env install failed"
+    else
+        log_info "foreign-env already installed, skipping."
+    fi
+else
+    log_warn "fish not found, skipping fish plugin setup."
 fi
 
 # ---------------------------------------------------
