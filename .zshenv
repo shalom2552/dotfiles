@@ -40,6 +40,3 @@ FD_EXCLUDES='--exclude .git --exclude node_modules --exclude .cache'
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FD_EXCLUDES"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --follow $FD_EXCLUDES"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_DEFAULT_OPTS="--style full --multi --preview 'bat --style=numbers --color=always --line-range :500 {}'"
-export FZF_ALT_C_OPTS="--preview 'eza -T --level=2 --icons --color=always {}'"
-export FZF_CTRL_R_OPTS="--preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --color=always -pl sh'"

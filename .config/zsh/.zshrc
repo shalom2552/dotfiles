@@ -3,7 +3,7 @@
 # =============================================================================
 # STARTUP
 # =============================================================================
-fastfetch
+# fastfetch
 [ -f "$ZDOTDIR/.localinit" ] && source "$ZDOTDIR/.localinit"; # local init script
 
 # =============================================================================
@@ -70,7 +70,10 @@ add-zsh-hook precmd () { print -Pn "\e]0;%~\a" }
 # =============================================================================
 
 # --- FZF ---
-command -v fzf &>/dev/null && source <(fzf --zsh)   # env vars live in .zshenv
+export FZF_DEFAULT_OPTS="--style full --multi --preview 'bat --style=numbers --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza -T --level=2 --icons --color=always {}'"
+export FZF_CTRL_R_OPTS="--preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --color=always -pl sh'"
+command -v fzf &>/dev/null && source <(fzf --zsh)
 
 # --- Zoxide ---
 eval "$(zoxide init zsh --cmd cd)"
