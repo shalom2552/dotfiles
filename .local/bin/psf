@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# ~/.local/bin/psf
+# Author: shalom2552
+# Date:   2026-08-15
+#
+# Fuzzy pick a running process and print its PID.
+#
+# Usage: psf [-h|--help]
+#        kill -9 "$(psf)"
+#
+# Dependencies: fzf, awk, ps
+
+set -uo pipefail
+
+COLORS=(
+    -v grn='\033[32m' -v ylw='\033[33m' -v red='\033[31m'
+    -v cyn='\033[36m' -v blu='\033[34m' -v gry='\033[90m'
+    -v bld='\033[1m'  -v rst='\033[0m'
+)
+
+FZF_OPTS=(
+    --pointer=▶ --border=rounded --border-label-pos=center
+    --border-label=" Processes "
+    --height=100% --style=full --color=dark
+    --ansi --no-header --layout=reverse
+    --delimiter="\t" --with-nth=2..
+    --prompt="proc > " --preview-window=right:45%:wrap
+    --bind=ctrl-d:half-page-down,ctrl-u:half-page-up
+    --bind=ctrl-/:toggle-preview
+)
+
+# ========== PREVIEW ==========
+PREVIEW_AWK='
+function row(label, value) { printf "  %s%-6s%s %s\n", cyn, label, rst, value }
+function load(pct)         { return (pct+0 >= 50) ? red : ((pct+0 >= 10) ? ylw : grn) }
+function state(s,   w, i) {
+    split("running sleeping blocked idle stopped stopped zombie dead paging", w)
+    i = index("RSDITtZXW", substr(s, 1, 1))
+    return ((s ~ /^[ZXD]/) ? red : (s ~ /^[Tt]/) ? ylw : grn) (i ? w[i] : s) rst
+}
+
+{
+    cmd = $10; for (i = 11; i <= NF; i++) cmd = cmd " " $i
+    name = cmd; sub(/ .*/, "", name); sub(/.*\//, "", name)   # basename of argv0
+
+    printf "  %s%s%s%s\n\n", bld, blu, name, rst
+    row("PID", $2); row("PPID", $3); row("USER", $1)
+    row("CPU", load($4) $4 "%" rst)
+    row("MEM", load($5) $5 "%" rst)
+    row("TIME", $7); row("UP", $8); row("START", started)
+    row("STATE", state($6)); row("NICE", $9)
+    printf "\n  %sCOMMAND%s\n  %s%s%s\n", cyn, rst, gry, cmd, rst
+}
+
+END { if (!NR) printf "  %sprocess gone%s\n", red, rst }'
+
+# lstart is multi-word, so it is fetched separately to keep field numbers stable
+PREVIEW="ps -ww -p {1} -o user=,pid=,ppid=,%cpu=,%mem=,stat=,time=,etime=,nice=,args= |
+awk $(printf '%q ' "${COLORS[@]}") -v started=\"\$(ps -p {1} -o lstart=)\" '$PREVIEW_AWK'"
+
+# ========== LIST ==========
+# ps fields: 1 PID  2 PPID  3 %CPU  4+ COMMAND. Emitted as: PID \t COMMAND
+sel=$(ps -e -ww -o pid=,ppid=,%cpu=,args= --sort=-%cpu | awk "${COLORS[@]}" -v self=$$ '
+function mine(p) {   # p is self or one of its descendants
+    while (p > 1 && p != self && (p in parent)) p = parent[p]
+    return p == self
+}
+
+$4 ~ /^\[/ { next }   # kernel threads
+
+{
+    parent[$1] = $2
+    exe = $4; sub(/.*\//, "", exe)
+    args = ""; for (i = 5; i <= NF; i++) args = args " " $i
+
+    color = ($3+0 >= 50) ? red : (($3+0 >= 10) ? ylw : grn)
+    pid[++n] = $1
+    out[n] = color exe rst gry args rst
+}
+
+END { for (r = 1; r <= n; r++) if (!mine(pid[r])) print pid[r] "\t" out[r] }' |
+fzf "${FZF_OPTS[@]}" --preview "$PREVIEW")
+
+[ -n "$sel" ] || exit 1
+printf '%s\n' "${sel%%$'\t'*}"
