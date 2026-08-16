@@ -3,20 +3,21 @@
 palette = "tokyo_night"
 
 # ── Layout ────────────────────────────────────────────────────────────────────
-format = """
-[](cap)\
-$os$hostname\
-[](fg:cap bg:dblue)\
-$directory\
-$python$container\
-[](fg:dblue bg:navy)\
-$git_branch$git_status\
-[](fg:navy bg:dark)\
-$jobs$status$cmd_duration\
-[](fg:dark bg:darker)\
-$time\
-[](fg:darker)\
-\n$character"""
+format = """$character"""
+# format = """
+# [](cap)\
+# $os$hostname\
+# [](fg:cap bg:dblue)\
+# $directory\
+# $python$container\
+# [](fg:dblue bg:navy)\
+# $git_branch$git_status\
+# [](fg:navy bg:dark)\
+# $jobs$status$cmd_duration\
+# [](fg:dark bg:darker)\
+# $time\
+# [](fg:darker)\
+# \n$character"""
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 [palettes.tokyo_night]
