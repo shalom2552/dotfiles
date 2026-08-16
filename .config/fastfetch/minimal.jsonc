@@ -1,0 +1,19 @@
+{
+    "logo": { "type": "none", "padding": { "left": 1 } },
+    "display": {
+        "separator": " ",
+        "color": { "keys": "35" }
+    },
+    "modules": [
+        { "type": "custom", "format": "\u001b[35m  ╭──────╮\u001b[0m" },
+        { "type": "uptime",   "key":  "\u001b[35m  │ up   │\u001b[0m", "keyWidth": 12, "format": "{?1}{1}d {?}{2}h {3}m" },
+        { "type": "os",       "key":  "\u001b[35m  │ os   │\u001b[0m", "keyWidth": 12, "format": "" },
+        { "type": "kernel",   "key":  "\u001b[35m  │ kern │\u001b[0m", "keyWidth": 12, "format": "" },
+        { "type": "wm",       "key":  "\u001b[35m  │ wm   │\u001b[0m", "keyWidth": 12, "format": "" },
+        { "type": "memory",   "key":  "\u001b[35m  │ mem  │\u001b[0m", "keyWidth": 12, "format": "" },
+        { "type": "shell",    "key":  "\u001b[35m  │ sh   │\u001b[0m", "keyWidth": 12, "format": "" },
+        { "type": "terminal", "key":  "\u001b[35m  │ term │\u001b[0m", "keyWidth": 12, "format": "" },
+        { "type": "custom", "format": "\u001b[35m  ╰──────╯\u001b[0m" },
+        { "type": "colors", "paddingLeft": 2, "symbol": "circle" }
+    ]
+}
