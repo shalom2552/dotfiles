@@ -4,13 +4,14 @@ CONFDIR="$HOME/.config"
 
 # ========== OPTIONS ==========
 declare -A options=(
-    ["config"]="$HOME/.local/bin/config"
+    ["conf"]="$HOME/.local/bin/conf"
     ["kitty"]="$CONFDIR/kitty/kitty.conf"
     ["tmux"]="$CONFDIR/tmux/tmux.conf"
     ["zsh"]="$CONFDIR/zsh/.zshrc"
     ["alias"]="$CONFDIR/zsh/.aliases"
     ["local"]="$CONFDIR/zsh/.localconf"
     ["starship"]="$CONFDIR/starship.toml"
+    ["fastfetch"]="$CONFDIR/fastfetch/config.jsonc"
     ["bashrc"]="$HOME/.bashrc"
 )
 
