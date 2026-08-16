@@ -12,7 +12,7 @@ if status is-interactive
     # STARTUP
     # =========================================================================
     set -g fish_greeting
-    fastfetch
+    fastfetch -c ~/.config/fastfetch/minimal.jsonc
 
     eval "$(starship init fish)"
 

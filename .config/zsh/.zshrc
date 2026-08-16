@@ -3,7 +3,7 @@
 # =============================================================================
 # STARTUP
 # =============================================================================
-# fastfetch
+fastfetch -c ~/.config/fastfetch/minimal.jsonc
 [ -f "$ZDOTDIR/.localinit" ] && source "$ZDOTDIR/.localinit"; # local init script
 
 # =============================================================================
@@ -59,7 +59,7 @@ bindkey ' ' magic-space   # immediate !! expansion on space
 command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd)"
 
 # pwd and ls on cd
-chpwd() { eza -G --icons --group-directories-first --git --header }
+# chpwd() { eza -G --icons --group-directories-first --git --header }
 
 # set window title to full path (relative to home), removing user@host
 autoload -Uz add-zsh-hook
