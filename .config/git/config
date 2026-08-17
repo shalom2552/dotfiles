@@ -1,0 +1,6 @@
+[include]
+    path = ~/.config/git/config.local
+
+[core]
+	excludesFile = ~/.config/git/ignore
+	pager = hunk pager
