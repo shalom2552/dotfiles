@@ -295,6 +295,27 @@ else
 fi
 
 # ---------------------------------------------------
+# 3a. Extras — not in either distro's repos
+# ---------------------------------------------------
+
+# hunk
+HUNK_TAG=$(curl -sS https://api.github.com/repos/modem-dev/hunk/releases/latest | jq -r '.tag_name')
+if [ -z "$HUNK_TAG" ] || [ "$HUNK_TAG" = "null" ]; then
+    log_warn "Could not resolve hunk version, skipping..."
+elif [ "v$(hunk --version 2>/dev/null)" != "$HUNK_TAG" ]; then
+    log_info "Installing hunk $HUNK_TAG..."
+    HUNK_TMP=$(mktemp -d)
+    curl -fLo "$HUNK_TMP/hunk.tar.gz" \
+        "https://github.com/modem-dev/hunk/releases/download/$HUNK_TAG/hunkdiff-linux-x64.tar.gz" \
+        && tar xzf "$HUNK_TMP/hunk.tar.gz" -C "$HUNK_TMP" \
+        && sudo install -m 755 "$HUNK_TMP/hunkdiff-linux-x64/hunk" /usr/local/bin/hunk \
+        || log_warn "Failed to install hunk, skipping..."
+    rm -rf "$HUNK_TMP"
+else
+    log_info "hunk already up to date, skipping."
+fi
+
+# ---------------------------------------------------
 # 4. Shell environment (Oh My Zsh + Plugins)
 # ---------------------------------------------------
 OMZ_DIR="$HOME/.local/share/oh-my-zsh"

@@ -1,0 +1,29 @@
+# ~/.config/hunk/config.toml
+
+# Appearance
+theme = "tokyo-night-custom"
+transparent_background = true
+syntax_highlighting = true
+
+# Layout
+show_line_numbers = true
+menu_bar = false
+sidebar = "auto"            # "auto", true, or false (file list sidebar)
+mode = "auto"               # "auto", "split", or "stack"
+
+# Diff behavior
+tab_width = 4               # 1-16
+side_by_side = true         # default side-by-side view
+context_lines = 3           # unchanged lines around diffs
+wrap_lines = false          # prevent messy line breaking
+agent_notes = true          # show AI agent annotations/notes
+exclude_untracked = false   # exclude untracked files from diff
+
+# Custom theme tokyo-night based
+[custom_theme]
+base = "tokyo-night"
+label = "tokyo-night-custom"
+diff_add = "#73daca"
+diff_add_bg = "#1f3844"
+diff_remove = "#f7768e"
+diff_remove_bg = "#3f2d3d"
