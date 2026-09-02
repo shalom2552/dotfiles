@@ -7,7 +7,7 @@ Personal configuration files for Linux. Managed with [GNU Stow](https://www.gnu.
 ## Install
 
 ```bash
-bash <(curl -fSsL shalom2552.github.io/dotfiles/install.sh)
+bash <(curl -fSsL shalom2552.github.io/dotfiles/install)
 ```
 
 > Installs packages (Arch + Debian/Ubuntu), sets up Oh My Zsh, fonts, fnm, and symlinks all configs via Stow.

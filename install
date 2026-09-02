@@ -25,7 +25,7 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 on_error() {
     echo -e "\n${RED}[ERROR]${NC} Setup failed at line $1.\n"
     echo -e "  Try run setup manually:\n"
-    echo -e "    cd ~/dotfiles && ./install.sh\n"
+    echo -e "    cd ~/dotfiles && ./install\n"
     exit 1
 }
 trap 'on_error $LINENO' ERR
@@ -109,7 +109,7 @@ elif [ -d "$DOTFILES_DIR/.git" ]; then
         log_info "Dotfiles updated."
     fi
     log_info "Re-launching updated script..."
-    exec env DOT_REEXECED=1 bash "$DOTFILES_DIR/install.sh"
+    exec env DOT_REEXECED=1 bash "$DOTFILES_DIR/install"
 else
     if [ -d "$DOTFILES_DIR" ]; then
         DOTFILES_BAK="$HOME/dotfiles.bak-$(date +%Y%m%d-%H%M%S)"
