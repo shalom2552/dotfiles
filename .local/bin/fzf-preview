@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# ~/.local/bin/fzf-preview
+# Author: shalom2552
+# Date:   2026-09-02
+#
+# Preview a path for fzf: a tree for directories, a highlighted head for files,
+# the raw line for anything else.
+#
+# Usage: fzf --preview 'fzf-preview {}'
+#
+# Dependencies: fzf, bat, eza
+
+set -uo pipefail
+
+path=${1:-}
+[ -n "$path" ] || exit 0
+
+if [ -d "$path" ]; then
+    eza -T --level=2 --icons --color=always --group-directories-first -- "$path"
+elif [ -f "$path" ]; then
+    bat --style=numbers --color=always --line-range=:500 -- "$path"
+else
+    printf '%s\n' "$path"
+fi
