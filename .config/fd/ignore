@@ -1,0 +1,22 @@
+# Global fd ignore, read automatically from $XDG_CONFIG_HOME/fd/ignore.
+# Applied as if it were an .fdignore in the current directory.
+# Bypass with `fd -I` / `fd --no-ignore`.
+
+.git/
+.cache/
+node_modules/
+
+# Toolchain and package caches
+.cargo/
+.rustup/
+.npm/
+.bun/
+.venv/
+__pycache__/
+
+# Go module cache. Both spellings: patterns anchor to the search root, so
+# go/pkg/ matches from above ~/go and pkg/mod/ matches from inside it.
+go/pkg/
+pkg/mod/
+
+Steam/
