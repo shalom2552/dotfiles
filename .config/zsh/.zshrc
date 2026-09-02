@@ -58,23 +58,16 @@ setopt HIST_VERIFY                      # verify command before executing it
 bindkey ' ' magic-space   # immediate !! expansion on space
 command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd)"
 
-# pwd and ls on cd
-# chpwd() { eza -G --icons --group-directories-first --git --header }
-
 # set window title to full path (relative to home), removing user@host
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd () { print -Pn "\e]0;%~\a" }
 
+# pwd and ls on cd
+# chpwd() { eza -G --icons --group-directories-first --git --header }
+
 # =============================================================================
 # TOOLS
 # =============================================================================
-
-# --- FZF ---
-export FZF_DEFAULT_OPTS="--style full --multi --preview 'bat --style=numbers --color=always --line-range :500 {}'"
-export FZF_ALT_C_OPTS="--preview 'eza -T --level=2 --icons --color=always {}'"
-export FZF_CTRL_R_OPTS="--preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --color=always -pl sh' --preview-window=up,1 --layout=reverse"
-command -v fzf &>/dev/null && source <(fzf --zsh)
-fzf-cd-widget() { local d=$(FZF_DEFAULT_COMMAND=$FZF_ALT_C_COMMAND FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS $FZF_ALT_C_OPTS" fzf --reverse --walker=dir,follow,hidden +m </dev/tty) && builtin cd -- "$d"; zle reset-prompt; }  # ALT-C without echoing cd
 
 # --- Zoxide ---
 eval "$(zoxide init zsh --cmd cd)"
@@ -84,6 +77,7 @@ eval "$(zoxide init zsh --cmd cd)"
 # =============================================================================
 _load() { [ -f "$1" ] && source "$1"; }
 
+_load "$ZDOTDIR/.fzfrc"
 _load "$ZDOTDIR/.aliases"
 _load "$ZDOTDIR/.localconf"
 

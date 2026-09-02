@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+# zsh only: zle, zstyle and setopt have no bash equivalent.
+# Lister commands live in .zshenv, path exclusions in ~/.config/fd/ignore.
+
+# =============================================================================
+# OPTIONS
+# =============================================================================
+export FZF_DEFAULT_OPTS="--style full --preview 'fzf-preview {}'"
+export FZF_CTRL_R_OPTS="--preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --color=always -pl sh' --preview-window=up,1 --layout=reverse"
+
+command -v fzf &>/dev/null && source <(fzf --zsh)
+
+fzf-cd-widget() {
+  setopt localoptions pipefail no_aliases 2>/dev/null
+  local dir
+  dir=$(FZF_DEFAULT_COMMAND=$FZF_ALT_C_COMMAND \
+        FZF_DEFAULT_OPTS="--height 40% --min-height 20+ --bind=ctrl-z:ignore --reverse --scheme=path $FZF_DEFAULT_OPTS +m" \
+        FZF_DEFAULT_OPTS_FILE='' fzf < /dev/tty)
+  [[ -n $dir ]] || { zle redisplay; return 0 }
+  cd -- "$dir"
+  local ret=$?
+  zle reset-prompt
+  return ret
+}
