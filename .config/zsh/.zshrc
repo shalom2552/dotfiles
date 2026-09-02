@@ -72,7 +72,7 @@ add-zsh-hook precmd () { print -Pn "\e]0;%~\a" }
 # --- FZF ---
 export FZF_DEFAULT_OPTS="--style full --multi --preview 'bat --style=numbers --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza -T --level=2 --icons --color=always {}'"
-export FZF_CTRL_R_OPTS="--preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --color=always -pl sh'"
+export FZF_CTRL_R_OPTS="--preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --color=always -pl sh' --preview-window=up,1 --layout=reverse"
 command -v fzf &>/dev/null && source <(fzf --zsh)
 fzf-cd-widget() { local d=$(FZF_DEFAULT_COMMAND=$FZF_ALT_C_COMMAND FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS $FZF_ALT_C_OPTS" fzf --reverse --walker=dir,follow,hidden +m </dev/tty) && builtin cd -- "$d"; zle reset-prompt; }  # ALT-C without echoing cd
 
