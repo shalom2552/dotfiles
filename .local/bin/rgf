@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+# ~/.local/bin/rgf
+# Author: shalom2552
+# Date:   2026-09-02
+#
+# Live ripgrep in fzf. Every keystroke re-runs the search; Enter opens the
+# selected hit in $EDITOR at the matching line, then returns to the picker.
+#
+# Usage: rgf [pattern] [dir]
+#        rgf [-wc] [-q pattern] [-d dir]
+#        rgf -h for the full help
+#
+# Ignores: hidden and git-ignored files are searched; .ignore and .rgignore apply
+#
+# Dependencies: fzf, rg, bat, $EDITOR (default nvim)
+
+set -uo pipefail
+
+PROMPT="rgf"
+
+# Settings, overridden by the command line.
+QUERY=""
+DIR="."
+WORD=""
+CASE=""
+
+# Live toggles: one marker file per rg flag, flipped by fzf, read by rg.
+STATE=""
+
+usage() {
+    cat <<'EOF'
+NAME
+    rgf - live ripgrep in fzf
+
+SYNOPSIS
+    rgf [pattern] [dir]
+    rgf [-wc] [-q pattern] [-d dir]
+
+DESCRIPTION
+    Every keystroke re-runs ripgrep over dir. The input is the rg pattern,
+    smart-case, regex. Hidden and git-ignored files included, .git/ skipped.
+
+OPTIONS
+    -q, --query PAT     starting pattern
+    -d, --directory DIR directory to search, default .
+    -w, --word          start in whole-word mode
+    -c, --case          start case-sensitive
+    -h, --help          show this help
+
+KEYS
+    enter     open hit in $EDITOR (default nvim), then back to rgf
+    alt-w     toggle whole-word
+    alt-c     toggle case-sensitive
+    ctrl-/    toggle preview
+    ctrl-d/u  half page down/up
+    ctrl-f/b  preview half page down/up
+    esc       quit
+
+EXAMPLES
+    rgf TODO src          start on TODO under src
+    rgf -d ~/code         open on a directory
+    rgf -w log            "log" but not "login"
+EOF
+}
+
+fatal() { echo "rgf: $*" >&2; exit 1; }
+
+# Consume the value after a flag, e.g. `need "$@"` for -d dir.
+need() { [ $# -ge 2 ] || fatal "$1 needs a value"; echo "$2"; }
+
+parse_args() {
+    while [ $# -gt 0 ]; do
+        case $1 in
+            -q|--query)     QUERY=$(need "$@") || exit 1; shift ;;
+            -d|--directory) DIR=$(need "$@") || exit 1; shift ;;
+            -w|--word)      WORD=1 ;;
+            -c|--case)      CASE=1 ;;
+            -h|--help)      usage; exit 0 ;;
+            -*)             fatal "unknown option: $1" ;;
+            *)              [ -n "$QUERY" ] && DIR=$1 || QUERY=$1 ;;
+        esac
+        shift
+    done
+}
+
+require_deps() {
+    local dep
+    for dep in fzf rg bat; do
+        command -v "$dep" &>/dev/null || fatal "$dep not found"
+    done
+}
+
+# Shell snippets for fzf's children: read a marker, flip a marker.
+read_flag()   { echo "\$([ -e ${STATE@Q}/$1 ] && echo $2)"; }
+toggle_flag() { echo "[ -e ${STATE@Q}/$1 ] && rm -f ${STATE@Q}/$1 || touch ${STATE@Q}/$1"; }
+
+# Prompt shows the active toggles flags
+prompt_cmd() { echo "echo ${PROMPT@Q}\$([ -e ${STATE@Q}/w ] && echo ' -w')\$([ -e ${STATE@Q}/s ] && echo ' -c')' ❯ '"; }
+
+# The rg call fzf re-runs on every keystroke; {q} is the current input.
+build_search_cmd() {
+    local rg=(rg --column --line-number --no-heading --color=always --smart-case
+              --hidden --no-ignore-vcs --glob '!.git/')
+    local flags="$(read_flag w -w) $(read_flag s -s)"
+    echo "[ -n {q} ] && ${rg[*]@Q} $flags -- {q}; true"
+}
+
+init_state() {
+    STATE=$(mktemp -d) || exit 1
+    trap 'rm -rf "$STATE"' EXIT INT TERM
+    [ -n "$WORD" ] && touch "$STATE/w"
+    [ -n "$CASE" ] && touch "$STATE/s"
+    return 0
+}
+
+main() {
+    parse_args "$@"
+    require_deps
+    init_state
+
+    DIR=$(realpath -- "$DIR") || exit 1
+    [ -d "$DIR" ] || fatal "not a directory: $DIR"
+    cd "$DIR" || fatal "cannot enter: $DIR"
+
+    local editor=${EDITOR:-nvim}
+    local search=$(build_search_cmd)
+
+    local opts=(
+        # Frame
+        --height=100% --style=full --color=dark --layout=reverse
+        --border=rounded --border-label-pos=center
+        --border-label=" rgf ${DIR/#$HOME/\~} "
+        --input-label=" search "
+        --list-label=" matches "
+        --pointer=▶
+        --ghost="Type to search... (ENTER open, Alt+W word, Alt+C case, Ctrl+/ preview)"
+
+        # rg drives the list, fzf does not filter it
+        --ansi --disabled
+        --query="$QUERY"
+        --bind="start:reload($search)+transform-prompt($(prompt_cmd))"
+        --bind="change:reload(sleep 0.1; $search)"
+
+        # Preview: file is field 1, line number is field 2
+        --delimiter=:
+        --preview-window='up,60%,border-bottom,+{2}+3/3'
+        --preview='bat --color=always --style=numbers --highlight-line {2} -- {1}'
+
+        # Keys
+        --bind="enter:execute(${editor@Q} +{2} -- {1})+reload($search)+refresh-preview"
+        --bind="alt-w:execute-silent($(toggle_flag w))+transform-prompt($(prompt_cmd))+reload($search)"
+        --bind="alt-c:execute-silent($(toggle_flag s))+transform-prompt($(prompt_cmd))+reload($search)"
+        --bind=ctrl-d:half-page-down,ctrl-u:half-page-up
+        --bind=ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up
+        --bind=ctrl-/:toggle-preview
+    )
+
+    fzf "${opts[@]}"
+}
+
+main "$@"
