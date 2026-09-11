@@ -56,6 +56,10 @@ setopt HIST_VERIFY                      # verify command before executing it
 # HOOKS
 # =============================================================================
 bindkey ' ' magic-space   # immediate !! expansion on space
+
+# bind Esc to a no-op widget to prevent it acting as a prefix
+KEYTIMEOUT=1; bindkey '^[' redisplay
+
 command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd)"
 
 # set window title to full path (relative to home), removing user@host
