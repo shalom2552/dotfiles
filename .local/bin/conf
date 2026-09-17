@@ -8,17 +8,18 @@ declare -A options=(
     ["zsh"]="$ZDOTDIR/.zshrc"
     ["alias"]="$ZDOTDIR/.aliases"
     ["local"]="$ZDOTDIR/.localconf"
-    ["fzf"]="$ZDOTDIR/.fzf"
+    ["fzf"]="$ZDOTDIR/.fzfrc"
     ["kitty"]="$CONFDIR/kitty/kitty.conf"
     ["tmux"]="$CONFDIR/tmux/tmux.conf"
     ["starship"]="$CONFDIR/starship.toml"
     ["fastfetch"]="$CONFDIR/fastfetch/config.jsonc"
     ["bashrc"]="$HOME/.bashrc"
+    ["zshenv"]="$HOME/.zshenv"
 )
 
 # ========== GLOABALS ==========
 BAT_FLGS=(--color=always --style=plain --map-syntax '\*.conf:INI')
-FZF_FLGS=(--ansi --cycle --with-nth=1 --delimiter="\t" --layout=reverse-list --preview-window right:80%)
+FZF_FLGS=(--ansi --cycle --with-nth=1 --delimiter="\t" --layout=reverse-list --preview-window right:75%)
 
 # ========== LOGIC ==========
 choice=$(
@@ -27,5 +28,8 @@ choice=$(
     done \
     | fzf "${FZF_FLGS[@]}" \
         --preview "bat ${BAT_FLGS[*]} {2}" \
-        --bind "enter:execute(nvim {2})"
-)
+        --accept-nth 2
+) || exit 0
+
+$EDITOR "$choice"
+
