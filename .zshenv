@@ -32,8 +32,7 @@ FNM_PATH="$HOME/.local/share/fnm"
 [[ -d "$FNM_PATH" ]] && export PATH="$FNM_PATH:$PATH"
 
 # ========== PAGER / MAN ==========
-export MANROFFOPT="-c"
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export MANPAGER='nvim +Man!'
 export LESS="--mouse --wheel-lines=3 -R"
 export BAT_PAGER="less --mouse --wheel-lines=3 -R"
 
