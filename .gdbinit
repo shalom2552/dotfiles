@@ -2408,12 +2408,21 @@ set disassembly-flavor intel
 set confirm off
 set pagination off
 set backtrace past-main off
+skip -gfi /usr/include/*
+
+# ignored on gdb builds without debuginfod
+python
+try:
+    gdb.execute('set debuginfod enabled on')
+except gdb.error:
+    pass
+end
 
 # dashboard
-dashboard -layout source variables stack memory expressions history
+dashboard -layout assembly registers threads breakpoints stack memory expressions history source variables
 
 dashboard source -style highlight-line True
-dashboard source -style height 20
+dashboard source -style height 10
 
 dashboard variables -style compact False
 dashboard variables -style align True
@@ -2421,5 +2430,84 @@ dashboard variables -style sort True
 
 dashboard -style syntax_highlighting 'monokai'
 dashboard -style style_low '38;5;244'
+dashboard -style dereference True
+dashboard -style style_critical '38;2;224;86;122'
+
+# grow source to fill the terminal
+python
+_dashboard_render = Dashboard.render
+def _fit_source_render(self, clear_screen, style_changed=False):
+    shown = [m for m in self.modules if m.enabled and not (m.output or self.output)]
+    source = next((m for m in shown if m.name == 'source'), None)
+    if not source:
+        return _dashboard_render(self, clear_screen, style_changed)
+    width, height = Dashboard.get_term_size()
+    used = 2 + 4
+    cached = []
+    for m in shown:
+        if m is source:
+            continue
+        try:
+            lines = m.instance.lines(width, height, style_changed)
+        except Exception:
+            continue
+        m.instance.lines = lambda *_, lines=lines: lines
+        cached.append(m.instance)
+        used += 1 + len(lines)
+    source.instance.height = max(10, height - used)
+    try:
+        _dashboard_render(self, clear_screen, style_changed)
+    finally:
+        for i in cached:
+            del i.lines
+Dashboard.render = _fit_source_render
+end
+
+# background on the current source line
+python
+import re
+_source_lines = Source.lines
+_source_bg = '1;48;2;35;40;64'
+def _source_lines_bg(self, width, *args):
+    old = R.style_selected_1
+    R.style_selected_1 = _source_bg
+    try:
+        lines = _source_lines(self, width, *args)
+    finally:
+        R.style_selected_1 = old
+    for n, line in enumerate(lines):
+        if _source_bg in line:
+            pad = width - len(re.sub(r'\x1b\[[0-9;]*m', '', line))
+            lines[n] = line + ansi(' ' * max(pad, 0), _source_bg)
+    return _bp_dot(lines)
+Source.lines = _source_lines_bg
+
+# breakpoint marker: dot instead of !
+def _bp_dot(lines):
+    bang = ansi('!', R.style_critical)
+    dot = ansi('●', R.style_critical)
+    return [dot + l[len(bang):] if l.startswith(bang) else l for l in lines]
+_assembly_lines = Assembly.lines
+Assembly.lines = lambda self, *args: _bp_dot(_assembly_lines(self, *args))
+end
+
+# on a signal inside a shared library, select the first frame in the program
+python
+_dashboard_on_stop = Dashboard.on_stop
+def _on_stop_user_frame(self, event):
+    if isinstance(event, gdb.SignalEvent):
+        frame = gdb.newest_frame()
+        while frame:
+            if gdb.solib_name(frame.pc()) is None and frame.find_sal().symtab:
+                frame.select()
+                break
+            frame = frame.older()
+    _dashboard_on_stop(self, event)
+if dashboard.enabled:
+    gdb.events.stop.disconnect(dashboard.on_stop)
+Dashboard.on_stop = _on_stop_user_frame
+if dashboard.enabled:
+    gdb.events.stop.connect(dashboard.on_stop)
+end
 
 
