@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# functions only, used by .zshrc
+
+# yazi: cd on exit
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" || return
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}

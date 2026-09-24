@@ -69,6 +69,15 @@ add-zsh-hook precmd () { print -Pn "\e]0;%~\a" }
 # pwd and ls on cd
 # chpwd() { eza -G --icons --group-directories-first --git --header }
 
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" || return
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
 # =============================================================================
 # TOOLS
 # =============================================================================
@@ -83,6 +92,7 @@ _load() { [ -f "$1" ] && source "$1"; }
 
 _load "$ZDOTDIR/.fzfrc"
 _load "$ZDOTDIR/.aliases"
+_load "$ZDOTDIR/.functions"
 _load "$ZDOTDIR/.localconf"
 
 unset -f _load
