@@ -16,19 +16,3 @@ url = "*/"
 group = "normal"
 run = "git"
 
-# preview scroll
-[[manager.prepend_keymap]]
-on = "J"
-run = "seek 1"
-desc = "Seek down 1 line in preview"
-
-[[manager.prepend_keymap]]
-on = "K"
-run = "seek -1"
-desc = "Seek up 1 line in preview"
-
-[[manager.prepend_keymap]]
-on   = [ "f" ]
-run  = "plugin smart-filter"
-desc = "Smart filter"
-
