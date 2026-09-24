@@ -1,7 +1,7 @@
 # ~/.config/hunk/config.toml
 
 # Appearance
-theme = "tokyo-night-custom"
+theme = "catppuccin-mocha-custom"
 transparent_background = true
 syntax_highlighting = true
 
@@ -19,11 +19,11 @@ wrap_lines = false          # prevent messy line breaking
 agent_notes = true          # show AI agent annotations/notes
 exclude_untracked = false   # exclude untracked files from diff
 
-# Custom theme tokyo-night based
+# Custom theme catppuccin-mocha based
 [custom_theme]
-base = "tokyo-night"
-label = "tokyo-night-custom"
-diff_add = "#73daca"
-diff_add_bg = "#1f3844"
-diff_remove = "#f7768e"
-diff_remove_bg = "#3f2d3d"
+base = "catppuccin-mocha"
+label = "catppuccin-mocha-custom"
+diff_add = "#a6e3a1"
+diff_add_bg = "#323c3f"
+diff_remove = "#f38ba8"
+diff_remove_bg = "#3e2e40"

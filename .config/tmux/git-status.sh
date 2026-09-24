@@ -16,7 +16,7 @@ flags=""
 [ -n "$ahead" ] && flags="$flags ↑$ahead"
 [ -n "$behind" ] && flags="$flags ↓$behind"
 
-if [ "$count" -gt 0 ]; then c=yellow; else c=magenta; fi
+if [ "$count" -gt 0 ]; then c=yellow; else c=green; fi
 
-printf '#[fg=%s,bg=default,nobold]#[fg=black,bg=%s,bold]  %s%s#[fg=%s,bg=default,nobold]' \
+printf '#[fg=%s,bg=default,nobold]#[fg=black,bg=%s,bold] %s%s#[fg=%s,bg=default,nobold]' \
   "$c" "$c" "$branch" "$flags" "$c"

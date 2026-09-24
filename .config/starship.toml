@@ -1,6 +1,6 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-palette = "tokyo_night"
+palette = "catppuccin_mocha"
 
 # ── Layout ────────────────────────────────────────────────────────────────────
 format = """$character"""
@@ -20,22 +20,22 @@ format = """$character"""
 # \n$character"""
 
 # ── Colors ────────────────────────────────────────────────────────────────────
-[palettes.tokyo_night]
-cap    = "#a3aed2"
-blue   = "#769ff0"
-dblue  = "#474f76"
-navy   = "#394260"
-dark   = "#2a3346"
-darker = "#20283b"
+[palettes.catppuccin_mocha]
+cap    = "#b4befe"
+blue   = "#89b4fa"
+dblue  = "#585b70"
+navy   = "#45475a"
+dark   = "#313244"
+darker = "#181825"
 
-black  = "#090c0c"
-white  = "#e3e5e5"
-muted  = "#a0a9cb"
-dim    = "#a9b1d6"
+black  = "#11111b"
+white  = "#cdd6f4"
+muted  = "#a6adc8"
+dim    = "#bac2de"
 
-green  = "#9ece6a"
-red    = "#f7768e"
-gold   = "#e0af68"
+green  = "#a6e3a1"
+red    = "#f38ba8"
+gold   = "#f9e2af"
 
 # ── Config ───────────────────────────────────────────────────────────────────
 

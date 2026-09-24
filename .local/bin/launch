@@ -113,8 +113,8 @@ if cache_is_stale; then
                     fi
                 fi
 
-                # Color the name (Tokyo Night Green: #9ece6a)
-                printf '\x1b[38;2;158;206;106m%s\x1b[0m\t%s\t%s\t%s\n' "$name" "${comment:-}" "$file" "${icon_path:-}"
+                # Color the name (Catppuccin Mocha Green: #a6e3a1)
+                printf '\x1b[38;2;166;227;161m%s\x1b[0m\t%s\t%s\t%s\n' "$name" "${comment:-}" "$file" "${icon_path:-}"
             done < <(find "$app_dir" -name "*.desktop" -print0 2>/dev/null)
         done
     } | sort -u -t$'\t' -k1,1 > "$CACHE_FILE"
@@ -152,9 +152,10 @@ selected_line=$(
         --no-info \
         --border=rounded \
         --height=100% \
-        --color=fg:#c0caf5,bg:-1,hl:#bb9af7 \
-        --color=fg+:#c0caf5,bg+:-1,hl+:#7dcfff \
-        --color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff \
+        --gutter=' ' \
+        --color=fg:#cdd6f4,bg:-1,hl:#cba6f7 \
+        --color=fg+:#cdd6f4,bg+:-1,hl+:#89dceb \
+        --color=info:#89b4fa,prompt:#89dceb,pointer:#89dceb \
     < "$CACHE_FILE"
 ) || exit 0
 

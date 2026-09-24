@@ -20,7 +20,7 @@ bash <(curl -fSsL shalom2552.github.io/dotfiles/install)
 ## Tracked Configurations
 
 * **Shell:** Zsh + Oh My Zsh + Starship
-* **Terminal:** Kitty (Tokyo Night Theme)
+* **Terminal:** Kitty (Catppuccin Mocha Theme)
 * **Editor:** Neovim ([LazyVim](https://www.lazyvim.org/)) (as a [submodule](.config/nvim))
 * **Version Manager:** fnm (Node.js)
 * **Tools:**
