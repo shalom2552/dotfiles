@@ -7,14 +7,11 @@
 # esc cancels. ctrl-n/r/d turn the fzf query line into an input field; enter
 # dispatches on the current prompt.
 #
-# Dependencies: fzf, nvim, script (util-linux); glow for pretty preview (bat fallback)
+# Dependencies: fzf; glow for pretty preview (bat fallback)
 set -uo pipefail
 
-# === Variables === #
-
+# === Variables ===============================================================
 export NOTES_DIR="$HOME/Documents/.notes"
-
-list_notes() { find "$NOTES_DIR" -maxdepth 1 -type f -printf '%f\n'; }
 
 export MAIN_PROMPT="> "
 export NEW_PROMPT="New: "
@@ -23,20 +20,56 @@ export DELETE_PROMPT="Delete? [Y/n] "
 export RESET="change-prompt($MAIN_PROMPT)+enable-search+clear-query"
 export DONE="$RESET+reload(list_notes)"
 
-# === Git pull === #
-[ -d "$NOTES_DIR/.git" ] \
-    && (( $(date +%s) - $(stat -c %Y "$NOTES_DIR/.git/FETCH_HEAD" 2>/dev/null || echo 0) > 600 )) \
-    && timeout 3 git -C "$NOTES_DIR" pull &>/dev/null
+# === Helpers =================================================================
+usage() {
+    cat <<EOF
+Usage: nb [-d DIR] [-h]
 
-# === Functions === #
+Fuzzy notes browser.
+Pulls with git on launch (at most every 10 min), commits and pushes on exit.
 
+Notes location: ${NOTES_DIR/$HOME/\~}
+
+Options:
+  -d, --dir DIR     use DIR as notes dir
+  -h, --help        show this help
+  --show-dir        show notes dir
+
+Keys:
+  enter             edit note in \$EDITOR
+  ctrl-n            new note (empty name: note_<date>)
+  ctrl-r            rename note
+  ctrl-d            delete note
+  ctrl-v            view note full screen
+  alt-j/k           scroll preview by line
+  alt-d/u           scroll preview by half page
+  esc               cancel prompt, or quit
+
+Sync:
+  Notes are committed locally. To sync them, add a remote once:
+    git -C $NOTES_DIR remote add origin <url>
+    git -C $NOTES_DIR push -u origin HEAD
+
+Dependencies:
+  fzf, git
+  glow or bat for pretty preview (optional)
+EOF
+}
+
+status() { printf '\r\033[K%s' "$1"; }
+die()    { echo "nb: $1" >&2; exit 1; }
+g()      { git -C "$NOTES_DIR" "$@"; }
+
+list_notes() { find "$NOTES_DIR" -maxdepth 1 -type f -printf '%f\n'; }
+
+# === fzf callbacks ===========================================================
 on_enter() {
     local note="$NOTES_DIR/${1:-}"
     case "$FZF_PROMPT" in
-        "$NEW_PROMPT")    echo "execute(nvim \"$NOTES_DIR/${FZF_QUERY:-note_$(date +'%b%d_%H%M')}.md\")+$DONE" ;;
+        "$NEW_PROMPT")    echo "execute(${EDITOR:-vi} \"$NOTES_DIR/${FZF_QUERY:-note_$(date +'%b%d_%H%M')}.md\")+$DONE" ;;
         "$RENAME_PROMPT") [[ -n "$FZF_QUERY" ]] && echo "execute-silent(mv \"$note\" \"$NOTES_DIR/$FZF_QUERY.md\")+$DONE" || echo "$DONE" ;;
         "$DELETE_PROMPT") [[ "$FZF_QUERY" != "n" ]] && echo "execute-silent(rm \"$note\")+$DONE" || echo "$DONE" ;;
-        *)                echo "execute(nvim \"$note\")" ;;
+        *)                echo "execute(${EDITOR:-vi} \"$note\")" ;;
     esac
 }
 
@@ -45,46 +78,92 @@ on_esc() {
 }
 
 on_preview() {
+    local f="$NOTES_DIR/${1:-}"
     if command -v glow &>/dev/null; then
-        script -qec "glow -s dark -w ${FZF_PREVIEW_COLUMNS:-80} '$NOTES_DIR/${1:-}'" /dev/null
+        glow -s dark -w "${FZF_PREVIEW_COLUMNS:-80}" "$f"
+    elif command -v bat &>/dev/null; then
+        bat --color=always --style=plain "$f"
     else
-        bat --color=always --style=plain "$NOTES_DIR/${1:-}"
+        cat "$f"
     fi
 }
 
 on_view() {
+    local f="$NOTES_DIR/${1:-}"
     if command -v glow &>/dev/null; then
-        glow -p "$NOTES_DIR/${1:-}"
+        glow -p "$f"
+    elif command -v bat &>/dev/null; then
+        bat --style=plain --paging=always "$f"
     else
-        bat --style=plain --paging=always "$NOTES_DIR/${1:-}"
+        less "$f"
     fi
 }
 
 export -f list_notes on_enter on_esc on_preview on_view
 export SHELL=bash
 
-# === Main script === #
+# === Steps ===================================================================
+pull_notes() {
+    [ -d "$NOTES_DIR/.git" ] \
+        && (( $(date +%s) - $(stat -c %Y "$NOTES_DIR/.git/FETCH_HEAD" 2>/dev/null || echo 0) > 600 )) \
+        && status "Updating..." \
+        && timeout 3 git -C "$NOTES_DIR" pull &>/dev/null
+}
 
-mkdir -p "$NOTES_DIR"
+browse_notes() {
+    list_notes | fzf --cycle --layout=reverse-list \
+        --prompt="$MAIN_PROMPT" --pointer="▶" --border-label=" Notes " \
+        --preview='on_preview {}' --preview-window=right:80%:wrap --preview-label=" Preview " \
+        --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
+        --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
+        --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
+        --bind='ctrl-v:execute(on_view {})' \
+        --bind='alt-j:preview-down,alt-k:preview-up' \
+        --bind='alt-d:preview-half-page-down,alt-u:preview-half-page-up' \
+        --bind='enter:transform:on_enter {}' \
+        --bind='esc:transform:on_esc'
+}
 
-list_notes | fzf --cycle --layout=reverse-list \
-    --prompt="$MAIN_PROMPT" --pointer="▶" --border-label=" Notes " \
-    --preview='on_preview {}' --preview-window=right:80%:wrap --preview-label=" Preview " \
-    --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
-    --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
-    --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
-    --bind='ctrl-v:execute(on_view {})' \
-    --bind='enter:transform:on_enter {}' \
-    --bind='esc:transform:on_esc'
+push_notes() {
+    local saved="" out
+    status ""
+    command -v git &>/dev/null || return
+    [ -d "$NOTES_DIR/.git" ] || g init -q
+    g add -A
+    g diff --cached --quiet || { g commit -qm "Update notes $(date +'%Y-%m-%d %H:%M')"; saved=1; }
 
-# === Git push === #
-if [ -d "$NOTES_DIR/.git" ]; then
-    [ -n "$(git -C "$NOTES_DIR" status --porcelain)" ] \
-        && git -C "$NOTES_DIR" add -A \
-        && git -C "$NOTES_DIR" commit -m "Update notes $(date +'%Y-%m-%d %H:%M')"
-    [ "$(git -C "$NOTES_DIR" rev-list --count '@{u}..HEAD' 2>/dev/null || echo 0)" -gt 0 ] \
-        && git -C "$NOTES_DIR" push
-fi &>/dev/null
+    if ! g rev-parse -q --verify '@{u}' &>/dev/null; then
+        [ -n "$saved" ] && { status "Saved locally"; echo; }
+    elif (( $(g rev-list --count '@{u}..HEAD') > 0 )); then
+        status "Pushing..."
+        if out=$(g push -q 2>&1); then
+            status "Updated"; echo
+        else
+            status "Push failed"; echo; echo "$out"
+        fi
+    fi
+}
 
+# === Main ====================================================================
+parse_args() {
+    while (( $# )); do
+        case "$1" in
+            -d|--dir)  [ -n "${2:-}" ] || die "--dir needs a path"
+                       NOTES_DIR="$2"; shift 2 ;;
+            --show-dir) echo "$NOTES_DIR"; exit 0 ;;
+            -h|--help) usage; exit 0 ;;
+            *)         usage; exit 1 ;;
+        esac
+    done
+}
+
+main() {
+    parse_args "$@"
+    mkdir -p "$NOTES_DIR"
+    pull_notes
+    browse_notes
+    push_notes
+}
+
+main "$@"
 exit 0
-
