@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+DOTFILES="$HOME/.dotfiles"
 CONFDIR="$HOME/.config"
 
 # ========== OPTIONS ==========
 declare -A options=(
     ["conf"]="$HOME/.local/bin/conf"
+
     ["zsh"]="$ZDOTDIR/.zshrc"
     ["alias"]="$ZDOTDIR/.aliases"
     ["local"]="$ZDOTDIR/.localconf"
@@ -13,8 +15,26 @@ declare -A options=(
     ["tmux"]="$CONFDIR/tmux/tmux.conf"
     ["starship"]="$CONFDIR/starship.toml"
     ["fastfetch"]="$CONFDIR/fastfetch/config.jsonc"
+    ["lazygit"]="$CONFDIR/lazygit/config.yml"
+
     ["bashrc"]="$HOME/.bashrc"
     ["zshenv"]="$HOME/.zshenv"
+    ["nvim"]="$CONFDIR/nvim"
+
+    ["cht"]="$HOME/.local/bin/cht"
+    ["clip"]="$HOME/.local/bin/clip"
+    ["conf"]="$HOME/.local/bin/conf"
+    ["fzf-preview"]="$HOME/.local/bin/fzf-preview"
+    ["launch"]="$HOME/.local/bin/launch"
+    ["n"]="$HOME/.local/bin/n"
+    ["nb"]="$HOME/.local/bin/nb"
+    ["pkgf"]="$HOME/.local/bin/pkgf"
+    ["power"]="$HOME/.local/bin/power"
+    ["psf"]="$HOME/.local/bin/psf"
+    ["rgf"]="$HOME/.local/bin/rgf"
+    ["speak"]="$HOME/.local/bin/speak"
+    ["tmux-dev"]="$HOME/.local/bin/tmux-dev"
+    ["track"]="$HOME/.local/bin/track"
 )
 
 # ========== GLOABALS ==========

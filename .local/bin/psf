@@ -27,6 +27,7 @@ FZF_OPTS=(
     --prompt="proc > " --preview-window=right:45%:wrap
     --bind=ctrl-d:half-page-down,ctrl-u:half-page-up
     --bind=ctrl-/:toggle-preview
+    --ghost="Search... (C-x kill, C-/ preview)"
 )
 
 # ========== PREVIEW ==========
@@ -60,7 +61,7 @@ awk $(printf '%q ' "${COLORS[@]}") -v started=\"\$(ps -p {1} -o lstart=)\" '$PRE
 
 # ========== LIST ==========
 # ps fields: 1 PID  2 PPID  3 %CPU  4+ COMMAND. Emitted as: PID \t COMMAND
-sel=$(ps -e -ww -o pid=,ppid=,%cpu=,args= --sort=-%cpu | awk "${COLORS[@]}" -v self=$$ '
+LIST_AWK='
 function mine(p) {   # p is self or one of its descendants
     while (p > 1 && p != self && (p in parent)) p = parent[p]
     return p == self
@@ -78,8 +79,13 @@ $4 ~ /^\[/ { next }   # kernel threads
     out[n] = color exe rst gry args rst
 }
 
-END { for (r = 1; r <= n; r++) if (!mine(pid[r])) print pid[r] "\t" out[r] }' |
-fzf "${FZF_OPTS[@]}" --preview "$PREVIEW")
+END { for (r = 1; r <= n; r++) if (!mine(pid[r])) print pid[r] "\t" out[r] }'
+
+LIST="ps -e -ww -o pid=,ppid=,%cpu=,args= --sort=-%cpu |
+awk $(printf '%q ' "${COLORS[@]}") -v self=$$ '$LIST_AWK'"
+
+sel=$(eval "$LIST" | fzf "${FZF_OPTS[@]}" --preview "$PREVIEW" \
+    --bind "ctrl-x:execute-silent(kill {1})+reload($LIST)")
 
 [ -n "$sel" ] || exit 1
 printf '%s\n' "${sel%%$'\t'*}"

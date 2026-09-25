@@ -53,7 +53,6 @@ KEYS
     alt-c     toggle case-sensitive
     ctrl-/    toggle preview
     ctrl-d/u  half page down/up
-    ctrl-f/b  preview half page down/up
     esc       quit
 
 EXAMPLES
@@ -151,7 +150,6 @@ main() {
         --bind="alt-w:execute-silent($(toggle_flag w))+transform-prompt($(prompt_cmd))+reload($search)"
         --bind="alt-c:execute-silent($(toggle_flag s))+transform-prompt($(prompt_cmd))+reload($search)"
         --bind=ctrl-d:half-page-down,ctrl-u:half-page-up
-        --bind=ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up
         --bind=ctrl-/:toggle-preview
     )
 

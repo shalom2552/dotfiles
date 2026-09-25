@@ -5,7 +5,7 @@
 # =============================================================================
 # OPTIONS
 # =============================================================================
-export FZF_DEFAULT_OPTS="--style full --preview 'fzf-preview {}'"
+export FZF_DEFAULT_OPTS="--style full --preview 'fzf-preview {}' --bind=alt-j:preview-down,alt-k:preview-up,alt-d:preview-half-page-down,alt-u:preview-half-page-up"
 export FZF_CTRL_R_OPTS="--preview 'echo {} | sed -E \"s/^[ ]*[0-9]+[ ]*//\" | bat --color=always -pl sh' --preview-window=up,1 --layout=reverse"
 
 command -v fzf &>/dev/null && source <(fzf --zsh)

@@ -144,8 +144,6 @@ browse_notes() {
         --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
         --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
         --bind='ctrl-v:execute(on_view {})' \
-        --bind='alt-j:preview-down,alt-k:preview-up' \
-        --bind='alt-d:preview-half-page-down,alt-u:preview-half-page-up' \
         --bind='enter:transform:on_enter {}' \
         --bind='esc:transform:on_esc'
 }
