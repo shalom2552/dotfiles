@@ -12,6 +12,7 @@ set -uo pipefail
 
 # === Variables ===============================================================
 export NOTES_DIR="$HOME/Documents/.notes"
+CMD=browse_notes
 
 export MAIN_PROMPT="> "
 export NEW_PROMPT="New: "
@@ -24,6 +25,7 @@ export DONE="$RESET+reload(list_notes)"
 usage() {
     cat <<EOF
 Usage: nb [-d DIR] [-h]
+       nb [-d DIR] -a FILE.md
 
 Fuzzy notes browser.
 Pulls with git on launch (at most every 10 min), commits and pushes on exit.
@@ -31,9 +33,10 @@ Pulls with git on launch (at most every 10 min), commits and pushes on exit.
 Notes location: ${NOTES_DIR/$HOME/\~}
 
 Options:
-  -d, --dir DIR     use DIR as notes dir
-  -h, --help        show this help
-  --show-dir        show notes dir
+  -h, --help        show help message
+  -d, --dir DIR     use DIR as the notes directory
+  -a, --add FILE    copy FILE (.md) into notes dir
+  -s, --show-dir    show the notes directory
 
 Keys:
   enter             edit note in \$EDITOR
@@ -47,8 +50,8 @@ Keys:
 
 Sync:
   Notes are committed locally. To sync them, add a remote once:
-    git -C $NOTES_DIR remote add origin <url>
-    git -C $NOTES_DIR push -u origin HEAD
+    git -C ${NOTES_DIR/$HOME/\~} remote add origin <url>
+    git -C ${NOTES_DIR/$HOME/\~} push -u origin HEAD
 
 Dependencies:
   fzf, git
@@ -57,7 +60,9 @@ EOF
 }
 
 status() { printf '\r\033[K%s' "$1"; }
-die()    { echo "nb: $1" >&2; exit 1; }
+err()    { status ""; echo "nb: $1" >&2; }
+die()    { err "$1"; exit 1; }
+
 g()      { git -C "$NOTES_DIR" "$@"; }
 
 list_notes() { find "$NOTES_DIR" -maxdepth 1 -type f -printf '%f\n'; }
@@ -110,20 +115,6 @@ pull_notes() {
         && timeout 3 git -C "$NOTES_DIR" pull &>/dev/null
 }
 
-browse_notes() {
-    list_notes | fzf --cycle --layout=reverse-list \
-        --prompt="$MAIN_PROMPT" --pointer="▶" --border-label=" Notes " \
-        --preview='on_preview {}' --preview-window=right:80%:wrap --preview-label=" Preview " \
-        --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
-        --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
-        --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
-        --bind='ctrl-v:execute(on_view {})' \
-        --bind='alt-j:preview-down,alt-k:preview-up' \
-        --bind='alt-d:preview-half-page-down,alt-u:preview-half-page-up' \
-        --bind='enter:transform:on_enter {}' \
-        --bind='esc:transform:on_esc'
-}
-
 push_notes() {
     local saved="" out
     status ""
@@ -144,15 +135,58 @@ push_notes() {
     fi
 }
 
+browse_notes() {
+    list_notes | fzf --cycle --layout=reverse-list \
+        --prompt="$MAIN_PROMPT" --pointer="▶" --border-label=" Notes " \
+        --delimiter='\.md$' --with-nth='{1}' \
+        --preview='on_preview {}' --preview-window=right:80%:wrap --preview-label=" Preview " \
+        --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
+        --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
+        --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
+        --bind='ctrl-v:execute(on_view {})' \
+        --bind='alt-j:preview-down,alt-k:preview-up' \
+        --bind='alt-d:preview-half-page-down,alt-u:preview-half-page-up' \
+        --bind='enter:transform:on_enter {}' \
+        --bind='esc:transform:on_esc'
+}
+
+add_note() {
+    [[ "$ADD_FILE" == *.md ]] || die "not a .md file: $ADD_FILE"
+    [ -f "$ADD_FILE" ]        || die "no such file: $ADD_FILE"
+    local dest="$NOTES_DIR/$(basename "$ADD_FILE")"
+    [ -e "$dest" ]            && die "note already exists: $(basename "$dest")"
+    cp "$ADD_FILE" "$dest"
+    status "Added $(basename "$dest")"; echo
+}
+
 # === Main ====================================================================
 parse_args() {
     while (( $# )); do
         case "$1" in
-            -d|--dir)  [ -n "${2:-}" ] || die "--dir needs a path"
-                       NOTES_DIR="$2"; shift 2 ;;
-            --show-dir) echo "$NOTES_DIR"; exit 0 ;;
-            -h|--help) usage; exit 0 ;;
-            *)         usage; exit 1 ;;
+            -d|--dir)
+                [ -n "${2:-}" ] || die "--dir needs a path"
+                NOTES_DIR="$2"
+                shift 2
+                ;;
+            -a|--add)
+                [ -n "${2:-}" ] || die "--add needs a file"
+                ADD_FILE="$2";
+                CMD=add_note
+                shift 2
+                ;;
+            -s|--show-dir)
+                echo "$NOTES_DIR"
+                exit 0
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            *)
+                err "Unknown option: $1"
+                usage
+                exit 1
+                ;;
         esac
     done
 }
@@ -161,7 +195,7 @@ main() {
     parse_args "$@"
     mkdir -p "$NOTES_DIR"
     pull_notes
-    browse_notes
+    $CMD
     push_notes
 }
 
