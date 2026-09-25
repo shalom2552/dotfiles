@@ -1,0 +1,4 @@
+#compdef rgf
+
+_arguments -- ':'
+

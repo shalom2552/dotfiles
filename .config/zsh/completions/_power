@@ -1,0 +1,3 @@
+#compdef power
+
+_arguments -- ':'
