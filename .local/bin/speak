@@ -28,7 +28,6 @@ usage() {
     echo ""
     echo "Available voices:"
     echo "  $(echo "${!MODELS[*]}")"
-    exit 1
 }
 
 confirm() {
@@ -104,6 +103,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -h|--help)
             usage
+            exit 0
             ;;
         --)
             shift
@@ -112,6 +112,7 @@ while [[ $# -gt 0 ]]; do
         -*)
             echo "Unknown option: $1"
             usage
+            exit 1
             ;;
         *)
             args+=("$1")
@@ -139,7 +140,7 @@ main() {
         if [ -f "$1" ]; then # file input
             piper "${piper_flags[@]}" -i "$1" | "${play_cmd[@]}"
         elif [ -n "$1" ]; then # text input
-            echo "$1" | piper "${piper_flags[@]}" | "${play_cmd[@]}"
+            echo "$*" | piper "${piper_flags[@]}" | "${play_cmd[@]}"
         fi
     } &>/dev/null || true
 
