@@ -17,7 +17,6 @@ FZF_OPTS=(
     --height=100% --style=full --color=dark
     --prompt="pkg > " --preview-window=right:50%:wrap
     --bind=ctrl-d:half-page-down,ctrl-u:half-page-up
-    --bind=ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up
     --bind=ctrl-/:toggle-preview
 )
 
