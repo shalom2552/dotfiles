@@ -99,7 +99,7 @@ prompt_cmd() { echo "echo ${PROMPT@Q}\$([ -e ${STATE@Q}/w ] && echo ' -w')\$([ -
 
 # The rg call fzf re-runs on every keystroke; {q} is the current input.
 build_search_cmd() {
-    local rg=(rg --column --line-number --no-heading --color=always --smart-case
+    local rg=(rg --column --line-number --no-heading --color=always --smart-case --follow
               --hidden --no-ignore-vcs --glob '!.git/')
     local flags="$(read_flag w -w) $(read_flag s -s)"
     echo "[ -n {q} ] && ${rg[*]@Q} $flags -- {q}; true"
