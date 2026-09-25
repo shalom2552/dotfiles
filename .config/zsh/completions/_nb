@@ -1,0 +1,7 @@
+#compdef nb
+
+_arguments \
+    -- \
+    '(-a|--add):markdown file:_files -g "*.md"' \
+    '(-d|--dir):directory:_directories'
+

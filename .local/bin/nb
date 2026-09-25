@@ -163,14 +163,18 @@ add_note() {
 parse_args() {
     while (( $# )); do
         case "$1" in
+            --*=*)
+                set -- "${1%%=*}" "${1#*=}" "${@:2}"
+                continue
+                ;;
             -d|--dir)
                 [ -n "${2:-}" ] || die "--dir needs a path"
-                NOTES_DIR="$2"
+                NOTES_DIR="${2/#\~/$HOME}"
                 shift 2
                 ;;
             -a|--add)
                 [ -n "${2:-}" ] || die "--add needs a file"
-                ADD_FILE="$2";
+                ADD_FILE="${2/#\~/$HOME}"
                 CMD=add_note
                 shift 2
                 ;;

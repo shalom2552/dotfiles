@@ -13,6 +13,9 @@ ZSH_THEME=""
 DISABLE_AUTO_TITLE="true"
 export ZSH_COMPDUMP="$XDG_CACHE_HOME/zcompdump-$HOST-$ZSH_VERSION"
 
+# add completions path, before oh-my-zsh is sourced (omz runs compinit)
+fpath=($fpath $ZDOTDIR/completions)
+
 plugins=(git fzf-tab zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
