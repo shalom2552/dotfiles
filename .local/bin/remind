@@ -1,0 +1,87 @@
+#!/usr/bin/bash
+# Simple cli reminder. Add rm and list reminders.
+
+DATADIR="$HOME/.local/share/remind"
+DATAFILE="$DATADIR/reminders"
+mkdir -p "$DATADIR"
+touch "$DATAFILE"
+
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+CAYN="\e[36m"
+RST="\e[0m"
+
+note() { echo -e "$@"; }
+die() { echo -e "$@"; exit 1; }
+
+help() {
+    cat <<EOF
+Track quick reminders. Add, delete and list.
+
+Commands
+  add    add a new reminder to the list
+  rm N   remove a reminder by index
+  ls     list current active reminders
+EOF
+}
+
+add-reminder() {
+    echo -e "$RST""$@""$RST" >> "$DATAFILE"
+    note "reminder added: $@"
+}
+
+remove-reminder() {
+    local count; count="$(wc -l < "$DATAFILE")"
+    [[ "$1" =~ ^[,0-9]+$ ]] || die "rm: need a number"
+    [[ "$1" -le "$count" ]] || die "rm: list-size=${count}, got:$1"
+    sed -i "${1//,/d;}d" "$DATAFILE"
+    note "Removed reminder: $1"
+}
+
+list-reminders() {
+    echo -e "${CAYN}Reminders:$RST"
+    if [[ -s "$DATAFILE" ]]; then
+        nl "$DATAFILE" 
+    else
+        echo "    No reminders"
+    fi
+}
+
+clear-all() {
+
+    read -p "Remove all reminders? [y/N]:" -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo
+        rm -f "$DATAFILE" && note "Removed all reminders"
+    fi
+}
+
+
+main() {
+    case "$1" in
+        add)
+            shift 1
+            add-reminder "$@"
+            ;;
+        rm)
+            shift 1
+            remove-reminder "$@"
+            ;;
+        ls)
+            list-reminders
+            ;;
+        clear)
+            clear-all
+            ;;
+        -h|--help)
+            help
+            ;;
+        *)
+            list-reminders
+            ;;
+    esac
+}
+
+main "$@"
+
