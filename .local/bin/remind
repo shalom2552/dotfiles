@@ -6,9 +6,6 @@ DATAFILE="$DATADIR/reminders"
 mkdir -p "$DATADIR"
 touch "$DATAFILE"
 
-RED="\e[31m"
-GREEN="\e[32m"
-YELLOW="\e[33m"
 CAYN="\e[36m"
 RST="\e[0m"
 
@@ -27,8 +24,8 @@ EOF
 }
 
 add-reminder() {
-    echo -e "$RST""$@""$RST" >> "$DATAFILE"
-    note "reminder added: $@"
+    echo -e "$RST""$*""$RST" >> "$DATAFILE"
+    note "reminder added: $*"
 }
 
 remove-reminder() {
@@ -48,6 +45,12 @@ list-reminders() {
     fi
 }
 
+count-reminders() {
+    if [[ -s "$DATAFILE" ]]; then
+        wc -l < "$DATAFILE"
+    fi
+}
+
 clear-all() {
 
     read -p "Remove all reminders? [y/N]:" -n 1 -r
@@ -56,7 +59,6 @@ clear-all() {
         rm -f "$DATAFILE" && note "Removed all reminders"
     fi
 }
-
 
 main() {
     case "$1" in
@@ -70,6 +72,9 @@ main() {
             ;;
         ls)
             list-reminders
+            ;;
+        count)
+            count-reminders
             ;;
         clear)
             clear-all
