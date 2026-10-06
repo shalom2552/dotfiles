@@ -1,0 +1,14 @@
+BasedOnStyle: WebKit
+
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignTrailingComments: true
+
+IndentCaseLabels: true
+AllowShortLoopsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: WithoutElse
+
+Cpp11BracedListStyle: true
+SpaceBeforeCpp11BracedList: false
+AlwaysBreakTemplateDeclarations: Yes
