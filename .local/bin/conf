@@ -16,6 +16,7 @@ declare -A options=(
     ["starship"]="$CONFDIR/starship.toml"
     ["fastfetch"]="$CONFDIR/fastfetch/config.jsonc"
     ["lazygit"]="$CONFDIR/lazygit/config.yml"
+    ["clangd"]="$CONFDIR/clangd/config.yaml"
 
     ["bashrc"]="$HOME/.bashrc"
     ["zshenv"]="$HOME/.zshenv"
