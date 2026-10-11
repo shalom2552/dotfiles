@@ -9,6 +9,7 @@ declare -A options=(
 
     ["zsh"]="$ZDOTDIR/.zshrc"
     ["alias"]="$ZDOTDIR/.aliases"
+    ["functions"]="$ZDOTDIR/.functions"
     ["local"]="$ZDOTDIR/.localconf"
     ["fzf"]="$ZDOTDIR/.fzfrc"
     ["kitty"]="$CONFDIR/kitty/kitty.conf"
