@@ -139,7 +139,7 @@ browse_notes() {
     list_notes | fzf --cycle --layout=reverse-list \
         --prompt="$MAIN_PROMPT" --pointer="▶" --border-label=" Notes " \
         --delimiter='\.md$' --with-nth='{1}' \
-        --preview='on_preview {}' --preview-window=right:80%:wrap --preview-label=" Preview " \
+        --preview='on_preview {}' --preview-window=right:70%:wrap --preview-label=" Preview " \
         --bind="ctrl-n:change-prompt($NEW_PROMPT)+disable-search+clear-query" \
         --bind="ctrl-r:change-prompt($RENAME_PROMPT)+disable-search+clear-query" \
         --bind="ctrl-d:change-prompt($DELETE_PROMPT)+disable-search+clear-query" \
