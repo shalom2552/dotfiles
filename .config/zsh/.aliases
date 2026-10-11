@@ -65,3 +65,5 @@ alias t='tmux new-session -A -s'
 alias tdev='tmux-dev'
 alias gc='gcommit'
 
+# Helpers
+alias calc='noglob python3 -c "import sys; print(eval(\" \".join(sys.argv[1:])))"'
