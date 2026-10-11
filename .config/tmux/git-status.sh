@@ -18,5 +18,5 @@ flags=""
 
 if [ "$count" -gt 0 ]; then c='#f9e2af'; else c='#a6e3a1'; fi
 
-printf '#[fg=%s,bg=default,nobold]#[fg=#45475a,bg=%s,bold] %s%s#[fg=%s,bg=default,nobold]' \
+printf '#[fg=%s,bg=default,nobold]#[fg=#45475a,bg=%s,bold] %s%s#[fg=%s,bg=default,nobold] ' \
   "$c" "$c" "$branch" "$flags" "$c"
