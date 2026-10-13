@@ -8,11 +8,11 @@ require("yatline"):setup({
 	part_separator = { open = "", close = "" },
 	inverse_separator = { open = "", close = "" },
 	style_a = {
-		fg = "#1e1e2e",
+		fg = "#45475a",
 		bg_mode = { normal = "#89b4fa", select = "#cba6f7", un_set = "#f38ba8", },
 	},
-	style_b = { bg = "#313244", fg = "#cdd6f4" },
-	style_c = { bg = "reset",   fg = "#bac2de" }, -- "reset" leaves it transparent
+	style_b = { bg = "#313244", fg = "#89b4fa" },
+	style_c = { bg = "reset",   fg = "#89b4fa" }, -- "reset" leaves it transparent
 })
 
 -- TODO: remove once yatline stops calling File:icon() (imsi32/yatline.yazi#79).
