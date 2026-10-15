@@ -16,9 +16,11 @@ die() { echo -e "remind: $@"; exit 1; }
 usage() {
     cat <<EOF
 Commands
+  ls     list current active reminders
   add    add a new reminder to the list
   rm N   remove a reminder by index
-  ls     list current active reminders
+  count  shows active reminders count
+  clear  removes all active reminders
 
 Flags
     -h,--help show help message
@@ -46,16 +48,16 @@ add-reminder() {
 
 remove-reminder() {
     local count; count="$(wc -l < "$DATAFILE")"
-    [[ "$1" =~ ^[,0-9]+$ ]] || die "rm: need a number"
+    [[ "${1-}" =~ ^[,0-9]+$ ]] || die "rm: need a number"
     [[ "$1" -le "$count" ]] || die "rm: list-size=${count}, got:$1"
-    sed -i "${1//,/d;}d" "$DATAFILE"
+    sed -i "${1//,/'d;'}d" "$DATAFILE"
     note "Removed reminder: $1"
 }
 
 list-reminders() {
     echo -e "${CAYN}Reminders:$RST"
     if [[ -s "$DATAFILE" ]]; then
-        nl "$DATAFILE" 
+        nl "$DATAFILE"
     else
         echo "    No reminders"
     fi
@@ -68,11 +70,15 @@ count-reminders() {
 }
 
 clear-all() {
-
-    read -p "Remove all reminders? [y/N]:" -n 1 -r
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo
-        rm -f "$DATAFILE" && note "Removed all reminders"
+    [[ count-reminders == '' ]] && echo "Aready clear" && return
+    if [[ -s "$DATAFILE" ]]; then
+        read -p "Remove all reminders? [y/N]:" -n 1 -r
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo
+            rm -f "$DATAFILE" && note "Removed all reminders"
+        fi
+    else
+        echo "Aready clear"
     fi
 }
 
