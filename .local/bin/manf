@@ -1,0 +1,131 @@
+#!/bin/sh
+# ~/.local/bin/manf
+# Author: shalom2552
+# Date:   2026-10-16
+#
+# Fuzzy find man pages by name and description. Preview shows the page;
+# Enter opens it with man, so $MANPAGER applies.
+#
+# Usage: manf [query]
+#        manf -h for keys
+#
+# Dependencies: fzf (0.56+), man, apropos, col; bat optional
+
+set -u
+
+self=$0
+
+usage() {
+    cat <<'EOF'
+Usage: manf [query]
+
+Fuzzy find man pages. A query with a single match opens it directly.
+
+Keys:
+    enter         open page
+    ctrl-n        toggle description matching
+    ctrl-s        cycle section filter: all, 1..9
+    alt-1..alt-9  show only that section (3 includes 3p, 3ssl, ...)
+    alt-0         show all sections
+    ctrl-d/ctrl-u half page down/up
+    alt-d/alt-u   scroll preview
+    ctrl-/        toggle preview
+EOF
+}
+
+label() {
+    case $1 in
+        1) t='User commands' ;;
+        2) t='System calls' ;;
+        3) t='Library calls' ;;
+        4) t='Special files' ;;
+        5) t='File formats' ;;
+        6) t='Games' ;;
+        7) t='Miscellaneous' ;;
+        8) t='System administration' ;;
+        9) t='Kernel routines' ;;
+        *) printf ' All sections '; return ;;
+    esac
+    printf ' Section %s · %s ' "$1" "$t"
+}
+
+list() {
+    apropos . 2>/dev/null | awk -v want="${1:-all}" '
+    BEGIN {
+        c["1"] = "97;175;239"; c["2"] = "224;108;117"; c["3"] = "229;192;123"
+        c["4"] = "198;120;221"; c["5"] = "86;182;194"; c["6"] = "209;154;102"
+        c["7"] = "255;121;198"; c["8"] = "220;223;228"; other = "148;156;187"
+    }
+    {
+        if (!match($0, /\([^)]+\)/)) next
+        name = substr($0, 1, RSTART - 1)
+        sec = substr($0, RSTART + 1, RLENGTH - 2)
+        desc = substr($0, RSTART + RLENGTH)
+        sub(/,.*/, "", name); sub(/[ \t]+$/, "", name)
+        sub(/^[ \t]*-[ \t]*/, "", desc)
+        d = substr(sec, 1, 1)
+        if (want != "all" && d != want) next
+        col = (d in c) ? c[d] : other
+        short = length(name) > 20 ? substr(name, 1, 19) "…" : sprintf("%-20s", name)
+        printf "\033[38;2;%sm%-5s\033[0m\t%s\t\033[38;2;148;156;187m%s\033[0m\t%s\n", col, sec, short, desc, name
+    }'
+}
+
+preview() {
+    MANWIDTH=${FZF_PREVIEW_COLUMNS:-80} man "${1%% *}" "${2%% *}" 2>/dev/null | col -bx |
+        if command -v bat >/dev/null 2>&1; then
+            bat -l man --style=plain --color=always --paging=never
+        elif command -v batcat >/dev/null 2>&1; then
+            batcat -l man --style=plain --color=always --paging=never
+        else
+            cat
+        fi
+}
+
+next_section() {
+    cur=$(printf '%s' "${FZF_BORDER_LABEL:-}" | tr -dc '0-9')
+    case $cur in
+        '') n=1 ;;
+        9) n=all ;;
+        *) n=$((cur + 1)) ;;
+    esac
+    printf 'change-border-label(%s)+reload(%s --list %s)\n' "$(label "$n")" "$self" "$n"
+}
+
+case ${1:-} in
+    -h|--help) usage; exit 0 ;;
+    --list) list "${2:-all}"; exit 0 ;;
+    --preview) preview "$2" "$3"; exit 0 ;;
+    --next) next_section; exit 0 ;;
+esac
+
+# Stay in the picker after closing a page:
+# enter=accept
+enter='execute(man {1} {4})'
+
+alt_binds="alt-0:change-border-label($(label all))+reload($self --list all)"
+for i in 1 2 3 4 5 6 7 8 9; do
+    alt_binds="$alt_binds,alt-$i:change-border-label($(label "$i"))+reload($self --list $i)"
+done
+
+sel=$(list | fzf --ansi --with-shell='sh -c' \
+    --delimiter='\t' --tabstop=1 --with-nth=1..3 --nth=2 \
+    --tiebreak=begin,length --no-hscroll \
+    --query="${1:-}" --select-1 --exit-0 \
+    --pointer=▶ --border=rounded --border-label="$(label all)" --border-label-pos=center \
+    --height=100% --style=full --prompt='man > ' \
+    --preview="$self --preview {1} {4}" \
+    --preview-window='right,60%,wrap,<72(down,50%,wrap)' \
+    --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
+    --bind=alt-d:preview-half-page-down,alt-u:preview-half-page-up \
+    --bind=ctrl-/:toggle-preview \
+    --bind='ctrl-n:change-nth(2,3|2)' \
+    --bind="ctrl-s:transform($self --next)" \
+    --bind="$alt_binds" \
+    --bind="enter:$enter" \
+    --accept-nth=1,4)
+
+[ -n "$sel" ] || exit 0
+sec=$(printf '%s' "$sel" | cut -f1)
+name=$(printf '%s' "$sel" | cut -f2)
+exec man "${sec%% *}" "${name%% *}"
