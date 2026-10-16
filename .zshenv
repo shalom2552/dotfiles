@@ -22,7 +22,7 @@ export GPG_TTY=$(tty)
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 
 # ========== PATH ==========
-typeset -U path PATH # drop PATH duplicates
+[ -n "$ZSH_VERSION" ] && typeset -U path PATH # drop PATH duplicates
 
 [[ -d "$HOME/.local/bin" ]]  && export PATH="$HOME/.local/bin:$PATH"
 [[ -d "$HOME/flutter/bin" ]] && export PATH="$HOME/flutter/bin:$PATH"
