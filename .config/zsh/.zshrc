@@ -6,9 +6,6 @@
 fastfetch -c ~/.config/fastfetch/minimal.jsonc
 [ -f "$ZDOTDIR/.localinit" ] && source "$ZDOTDIR/.localinit"; # local init script
 
-# =============================================================================
-# OH-MY-ZSH
-# =============================================================================
 ZSH_THEME=""
 DISABLE_AUTO_TITLE="true"
 export ZSH_COMPDUMP="$XDG_CACHE_HOME/zcompdump-$HOST-$ZSH_VERSION"
@@ -19,6 +16,10 @@ fpath=($fpath $ZDOTDIR/completions)
 plugins=(git fzf-tab zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
+# kitty/kitten completions (also works inside tmux)
+(( $+commands[kitten] )) && source <(kitten __complete__ setup zsh)
+
+# starship prompt
 eval "$(starship init zsh)"
 
 # =============================================================================
