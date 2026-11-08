@@ -13,6 +13,7 @@ declare -A options=(
     ["local"]="$ZDOTDIR/.localconf"
     ["fzf"]="$ZDOTDIR/.fzfrc"
     ["kitty"]="$CONFDIR/kitty/kitty.conf"
+    ["quick-access-terminal"]="$CONFDIR/kitty/quick-access-terminal.conf"
     ["tmux"]="$CONFDIR/tmux/tmux.conf"
     ["starship"]="$CONFDIR/starship.toml"
     ["fastfetch"]="$CONFDIR/fastfetch/config.jsonc"
