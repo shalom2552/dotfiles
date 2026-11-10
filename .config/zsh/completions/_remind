@@ -1,0 +1,26 @@
+#compdef remind
+
+_arguments \
+    '(- *)'{-h,--help}'[...]' \
+    '1:command:->cmds' \
+    '*::arg:->args'
+
+case $state in
+    cmds)
+        local -a cmds=(
+            'ls:list current active reminders'
+            'add:add a new reminder to the list'
+            'rm:remove a reminder by index'
+            'count:shows active reminders count'
+            'clear:removes all active reminders'
+            )
+        _describe 'command' cmds
+        ;;
+    args)
+        case $words[1] in
+            add) _message 'reminder text' ;;
+            rm)  _message 'reminder id'   ;;
+        esac
+        ;;
+esac
+
